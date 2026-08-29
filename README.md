@@ -493,17 +493,9 @@ cd study-streak
 
 ## Install Dependencies
 
-```bash
-npm install
-```
-
-If frontend and backend use separate packages:
+To install all dependencies for both the frontend and backend using npm workspaces, run this command in the repository root:
 
 ```bash
-cd frontend
-npm install
-
-cd ../backend
 npm install
 ```
 
@@ -511,34 +503,42 @@ npm install
 
 ## Environment Variables
 
-Create environment files based on:
+Copy the `.env.example` file in the root directory to `.env` in the backend directory (or repository root) and customize it with your database url and secret values (do NOT commit `.env` to Git):
 
-```text
-.env.example
-```
-
-Never commit actual secrets.
-
-Example:
-
-```env
-DATABASE_URL=
-JWT_SECRET=
-API_URL=
-AI_API_KEY=
+```bash
+cp .env.example .env
 ```
 
 ---
 
 ## Run the Application
 
-Development commands will be documented here once the project architecture is finalized.
+All development commands are ran from the repository root:
 
-Example:
-
-```bash
-npm run dev
-```
+- **Start Dev Servers** (starts both Vite frontend and Express backend concurrently):
+  ```bash
+  npm run dev
+  ```
+- **Run Tests** (runs backend endpoint tests and frontend smoke tests via Vitest):
+  ```bash
+  npm run test
+  ```
+- **Typecheck code** (validates TypeScript types across the monorepo):
+  ```bash
+  npm run typecheck
+  ```
+- **Lint code** (runs ESLint checks on frontend and backend):
+  ```bash
+  npm run lint
+  ```
+- **Format code** (runs Prettier formatting across the monorepo):
+  ```bash
+  npm run format
+  ```
+- **Build production assets** (compiles Vite React SPA and Express TS outputs):
+  ```bash
+  npm run build
+  ```
 
 ---
 

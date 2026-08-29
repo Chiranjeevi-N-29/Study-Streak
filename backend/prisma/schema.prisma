@@ -1,0 +1,145 @@
+// This is the Prisma Schema representation for StudyStreak project foundation
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  PARTIALLY_COMPLETED
+  NOT_COMPLETED
+  REST_DAY
+  MISSED
+}
+
+enum ConditionType {
+  STREAK
+  TASKS_COMPLETED
+  TOTAL_HOURS
+}
+
+model User {
+  id                    String                 @id @default(uuid())
+  email                 String                 @unique
+  passwordHash          String
+  name                  String
+  timezone              String                 @default("UTC")
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  studyPlans            StudyPlan[]
+  reflections           DailyReflection[]
+  achievements          UserAchievement[]
+  streak                Streak?
+  notificationPreference NotificationPreference?
+
+  @@index([email])
+}
+
+model StudyPlan {
+  id                 String      @id @default(uuid())
+  userId             String
+  user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date               String      // Stored as local date string YYYY-MM-DD
+  title              String?
+  description        String?
+  minimumStudyTarget Int         @default(30) // in minutes
+  status             Status      @default(TODO)
+  tasks              StudyTask[]
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model StudyTask {
+  id                String    @id @default(uuid())
+  studyPlanId       String
+  studyPlan         StudyPlan @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
+  title             String
+  description       String?
+  category          String
+  priority          Priority  @default(MEDIUM)
+  estimatedDuration Int       // in minutes
+  actualDuration    Int       @default(0) // in minutes
+  order             Int       @default(0)
+  status            Status    @default(TODO)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([studyPlanId])
+}
+
+model DailyReflection {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String   // Stored as local date string YYYY-MM-DD
+  learned   String
+  struggled String
+  nextSteps String
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model Streak {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak  Int      @default(0)
+  longestStreak  Int      @default(0)
+  lastActiveDate String?  // Local date string YYYY-MM-DD of last streak-qualifying day
+  updatedAt      DateTime @updatedAt
+}
+
+model Achievement {
+  id             String            @id @default(uuid())
+  code           String            @unique
+  title          String
+  description    String
+  icon           String
+  conditionType  ConditionType
+  conditionValue Int
+  users          UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+model NotificationPreference {
+  id                     String   @id @default(uuid())
+  userId                 String   @unique
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyReminderEnabled   Boolean  @default(true)
+  dailyReminderTime      String   @default("09:00") // Local HH:MM
+  eveningReminderEnabled Boolean  @default(true)
+  eveningReminderTime    String   @default("21:00") // Local HH:MM
+  streakAtRiskEnabled    Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
