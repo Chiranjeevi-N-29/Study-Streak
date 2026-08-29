@@ -69,9 +69,11 @@ The application tracks:
 * Completion percentage
 
 **Core Streak Rules**:
-* **Successful Day**: A day qualifies if a plan is `COMPLETED` or `PARTIALLY_COMPLETED` (achieving the minimum daily study duration target).
-* **Rest Day**: Users can explicitly mark a day as a `REST_DAY`. Rest days bridge active streaks and do not reset them, but do not increment the streak count.
-* **Missed Day**: A day breaks the streak if it has no plan created (automatic fallback for past days), or is marked as `MISSED` or left incomplete (`TODO`/`IN_PROGRESS`) at the end of the day.
+* **COMPLETED**: A StudyPlan is COMPLETED when all planned StudyTasks are completed.
+* **PARTIALLY_COMPLETED**: A StudyPlan is PARTIALLY_COMPLETED when at least one task is completed and the total actual/qualifying study time is greater than or equal to `minimumStudyTarget`.
+* **SUCCESSFUL DAY**: A day qualifies as a successful study day when the StudyPlan status is either COMPLETED or PARTIALLY_COMPLETED.
+* **REST_DAY**: An explicitly marked REST_DAY does not increase the streak, does not break the streak, and can bridge successful study days.
+* **MISSED**: A MISSED day breaks the current streak and does not count toward successful study days (automatic fallback for past days with no plan or left incomplete).
 
 ---
 

@@ -211,16 +211,23 @@ The streak engine is a core value proposition. We define its rules explicitly to
 
 ### Definitions & Day Categorization
 For every calendar date $D$ from the user's start tracking date ($D_{start}$, i.e., user registration date in their local timezone) to the user's current local date ($D_{today}$), we retrieve the user's `StudyPlan` for that date:
-- **If a `StudyPlan` exists**:
-  - If status is `COMPLETED` (all planned tasks completed) or `PARTIALLY_COMPLETED` (at least 1 task completed AND total time spent `>= minimumStudyTarget` of default 30 minutes), categorize the day as **`SUCCESS`**.
-  - If status is `REST_DAY`, categorize the day as **`REST`**.
-  - If status is `MISSED` or `NOT_COMPLETED`, categorize the day as **`MISSED`**.
-  - If status is `TODO` or `IN_PROGRESS`:
-    - If $D < D_{today}$ (in the past), categorize the day as **`MISSED`** (automatic fallback for past days left incomplete).
-    - If $D == D_{today}$ (today), categorize the day as **`PENDING`** (user still has time to complete tasks or explicitly mark it as a rest day).
-- **If no `StudyPlan` exists**:
-  - If $D < D_{today}$ (in the past), categorize the day as **`MISSED`** (no plan created for a past day constitutes a missed day; it is not automatically a rest day).
-  - If $D == D_{today}$ (today), categorize the day as **`PENDING`** (user still has time to create a plan or explicitly mark it as a rest day).
+
+- **COMPLETED**: A `StudyPlan` is `COMPLETED` when all planned `StudyTasks` are completed.
+- **PARTIALLY_COMPLETED**: A `StudyPlan` is `PARTIALLY_COMPLETED` when:
+  * At least one task is completed
+  * The total actual/qualifying study time is greater than or equal to `minimumStudyTarget`
+- **SUCCESSFUL DAY**: A day qualifies as a successful study day (categorized as **`SUCCESS`**) when the `StudyPlan` status is either:
+  * `COMPLETED`
+  * `PARTIALLY_COMPLETED`
+- **REST_DAY**: An explicitly marked `REST_DAY` (categorized as **`REST`**):
+  * Does not increase the streak
+  * Does not break the streak
+  * Can bridge successful study days
+- **MISSED**: A `MISSED` day (categorized as **`MISSED`**):
+  * Breaks the current streak
+  * Does not count toward successful study days
+  * *Note*: If no `StudyPlan` exists for a past date ($D < D_{today}$), or if a past `StudyPlan` remains as `TODO` or `IN_PROGRESS` after the local day ends, it is categorized as `MISSED`.
+- **PENDING**: If a plan for today ($D == D_{today}$) exists with status `TODO` or `IN_PROGRESS` (or if no plan exists yet for today), it is categorized as **`PENDING`** since the user still has time to complete tasks or explicitly mark it as a rest day.
 
 ### Streak Calculation Algorithm
 Given the ordered list of daily categories from $D_{start}$ to $D_{today}$ (inclusive):
