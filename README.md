@@ -241,176 +241,65 @@ StudyStreak follows a modular full-stack architecture.
                     └─────────────────────┘
 ```
 
----
-
 # 🛠️ Tech Stack
 
-> This section will be updated as the architecture is finalized.
+We utilize TypeScript end-to-end to ensure type safety and high development velocity:
 
-### Frontend
+* **Frontend**: React (TypeScript), Vite, Vanilla CSS Modules
+* **Backend**: Node.js, Express (TypeScript), Zod for validation
+* **Database**: PostgreSQL with Prisma ORM
+* **Testing**: Vitest for unit & integration testing, Supertest for API routes
+* **Development**: ESLint, Prettier, Husky
 
-* TypeScript
-* React
-* Modern CSS / UI framework
-* Responsive design
-
-### Backend
-
-* TypeScript
-* REST APIs
-* Authentication
-* Business logic services
-
-### Database
-
-* Relational database
-* Database migrations
-* ORM / query layer
-
-### Testing
-
-* Unit testing
-* Integration testing
-* API testing
-* Frontend testing
-
-### Development
-
-* Git
-* GitHub
-* Environment variables
-* ESLint
-* Prettier
-
-### Future
-
-* AI integration
-* Background jobs
-* Notifications
-* Analytics
-* Production deployment
+For a deep dive into the engineering rationale, refer to the [Architecture Specification](file:///d:/projects/Study-Streak/docs/architecture.md).
 
 ---
 
 # 📂 Project Structure
 
-The project will follow a modular structure similar to:
-
 ```text
 study-streak/
-│
-├── frontend/
+├── frontend/                 # React client SPA (Vite)
 │   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── features/
-│   │   ├── hooks/
-│   │   ├── services/
-│   │   ├── types/
-│   │   └── utils/
-│   │
-│   └── package.json
+│   │   ├── components/       # Shared UI components
+│   │   ├── features/         # Feature modules (auth, dashboard, analytics)
+│   │   ├── hooks/            # Global custom React hooks
+│   │   ├── services/         # API request wrapper and clients
+│   │   ├── types/            # TypeScript typing declarations
+│   │   └── App.tsx           # Router and app shell
+│   └── package.json          # Frontend packages
 │
-├── backend/
+├── backend/                  # Express server
 │   ├── src/
-│   │   ├── modules/
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   ├── middleware/
-│   │   ├── routes/
-│   │   ├── database/
-│   │   ├── utils/
-│   │   └── config/
-│   │
-│   └── package.json
+│   │   ├── config/           # Database configurations and env
+│   │   ├── middleware/       # JWT auth, Zod validation, error handles
+│   │   ├── modules/          # Feature domains (controllers, services, routing)
+│   │   └── server.ts         # Listener entry point
+│   ├── prisma/               # Database layout and migrations
+│   └── package.json          # Backend packages
 │
-├── docs/
+├── docs/                     # Architectural and API documentation
+│   └── architecture.md       # Tech stack and patterns spec
 │
-├── .env.example
-├── .gitignore
-├── README.md
-└── package.json
+├── .env.example              # Sample environment configuration
+├── .gitignore                # Global git ignore configurations
+└── package.json              # Monorepo / Root packages setup
 ```
-
-The exact structure may evolve as the project grows.
 
 ---
 
 # 🗄️ Core Data Model
 
-The initial domain model is expected to contain:
+Refer to the [Prisma Schema Spec in Architecture Specification](file:///d:/projects/Study-Streak/docs/architecture.md#L45-L175) for the exact fields, relationships, and constraints. The core entities are:
 
-```text
-User
- │
- ├── Study Plans
- │      │
- │      └── Study Tasks
- │
- ├── Daily Reflections
- │
- ├── Achievements
- │
- └── Statistics
-```
+- **User**: Represents a student's profile, credentials, timezone, and preferences.
+- **StudyPlan**: Daily schedules, linked uniquely to a user and local date.
+- **StudyTask**: Granular learning tasks (category, status, duration, priority) under a plan.
+- **DailyReflection**: Journals capturing learning outcomes, struggles, and next actions.
+- **Streak**: Tracks current/longest streak and last active date.
+- **Achievement / UserAchievement**: Gamification badges unlocked by study performance.
+- **NotificationPreference**: Time and channel settings for study reminders.
 
-### User
-
-```text
-id
-name
-email
-passwordHash
-timezone
-createdAt
-updatedAt
-```
-
-### Study Plan
-
-```text
-id
-userId
-date
-title
-description
-minimumStudyTarget
-status
-createdAt
-updatedAt
-```
-
-### Study Task
-
-```text
-id
-studyPlanId
-title
-description
-category
-priority
-estimatedDuration
-order
-status
-createdAt
-updatedAt
-```
-
-### Daily Reflection
-
-```text
-id
-userId
-date
-learned
-struggled
-nextSteps
-notes
-createdAt
-updatedAt
-```
-
-The final schema will be determined during implementation.
 
 ---
 
