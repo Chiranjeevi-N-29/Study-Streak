@@ -79,6 +79,8 @@ enum Status {
   COMPLETED
   PARTIALLY_COMPLETED
   NOT_COMPLETED
+  REST_DAY
+  MISSED
 }
 
 enum ConditionType {
@@ -205,30 +207,61 @@ model NotificationPreference {
 
 ## 4. Streak Calculation Engine (Business Rules)
 
-### Streak Qualification
-- A day qualifies as a **successful study day** if:
-  1. A `StudyPlan` was created for that calendar date.
-  2. The plan status is updated to `COMPLETED` (all planned tasks are marked as `COMPLETED`) **OR** `PARTIALLY_COMPLETED` (the sum of `estimatedDuration` of completed tasks is `>= minimumStudyTarget`).
-- A day with **no study plan created** is treated as a rest day. It does *not* break the streak, but it does *not* increment the streak counter.
-- A day with a study plan that remains `TODO`, `IN_PROGRESS`, or is explicitly marked `NOT_COMPLETED` at the end of the day **breaks the streak**.
+The streak engine is a core value proposition. We define its rules explicitly to support **explicit REST days** and **explicit MISSED days**, and how they affect the calculations.
 
-### Calculation Logic
-- The backend evaluates streaks using local date strings (`YYYY-MM-DD`) based on the user's timezone settings:
-  1. Sort all unique successful study plan dates for the user chronologically: $S = [D_1, D_2, \dots, D_n]$.
-  2. Compute **Current Streak**:
-     - Let $D_{today}$ be the user's local date today, and $D_{yesterday}$ be the user's local date yesterday.
-     - If $D_{today} \in S$: Find the length of the consecutive sequence of days counting backward from $D_{today}$.
-     - If $D_{today} \notin S$ and $D_{yesterday} \in S$: Find the length of the consecutive sequence of days counting backward from $D_{yesterday}$ (preserving the streak since the user still has until the end of today to complete today's task).
-     - Otherwise, the current streak is `0`.
-  3. Compute **Longest Streak**:
-     - Iterate through $S$ and find the maximum number of consecutive dates.
-  4. Cache the resulting integer values in the `Streak` table to optimize read performance.
+### Definitions & Day Categorization
+For every calendar date $D$ from the user's start tracking date ($D_{start}$, i.e., user registration date in their local timezone) to the user's current local date ($D_{today}$), we retrieve the user's `StudyPlan` for that date:
+- **If a `StudyPlan` exists**:
+  - If status is `COMPLETED` (all planned tasks completed) or `PARTIALLY_COMPLETED` (at least 1 task completed AND total time spent `>= minimumStudyTarget` of default 30 minutes), categorize the day as **`SUCCESS`**.
+  - If status is `REST_DAY`, categorize the day as **`REST`**.
+  - If status is `MISSED` or `NOT_COMPLETED`, categorize the day as **`MISSED`**.
+  - If status is `TODO` or `IN_PROGRESS`:
+    - If $D < D_{today}$ (in the past), categorize the day as **`MISSED`** (automatic fallback for past days left incomplete).
+    - If $D == D_{today}$ (today), categorize the day as **`PENDING`** (user still has time to complete tasks or explicitly mark it as a rest day).
+- **If no `StudyPlan` exists**:
+  - If $D < D_{today}$ (in the past), categorize the day as **`MISSED`** (no plan created for a past day constitutes a missed day; it is not automatically a rest day).
+  - If $D == D_{today}$ (today), categorize the day as **`PENDING`** (user still has time to create a plan or explicitly mark it as a rest day).
+
+### Streak Calculation Algorithm
+Given the ordered list of daily categories from $D_{start}$ to $D_{today}$ (inclusive):
+1. Initialize:
+   - `tempStreak = 0` (current consecutive successful streak)
+   - `longestStreak = 0` (maximum consecutive successful streak over history)
+2. For each date $D$ from $D_{start}$ to $D_{today}$:
+   - If category is **`SUCCESS`**:
+     - `tempStreak += 1`
+     - `longestStreak = max(longestStreak, tempStreak)`
+   - If category is **`REST`**:
+     - *Bridge behavior*: Do not increment `tempStreak` (it does not add to the active streak count), but **do not reset it to 0** either. The active streak count is preserved across the rest day.
+   - If category is **`MISSED`**:
+     - `tempStreak = 0` (streak is broken)
+   - If category is **`PENDING`** (only possible for today):
+     - Do not modify `tempStreak`. (The streak is not broken yet, nor is it incremented).
+3. The final `currentStreak` is the value of `tempStreak` after processing $D_{today}$.
+4. The final `longestStreak` is the value of `longestStreak` at the end of the loop.
+
+### Scenario Examples:
+- **One Rest Day**:
+  - `[SUCCESS, REST, SUCCESS]` -> `tempStreak` goes `1 -> 1 -> 2`. Current Streak = `2`. The rest day successfully bridges the two active days without breaking or resetting the streak.
+- **Multiple Consecutive Rest Days**:
+  - `[SUCCESS, REST, REST, REST, SUCCESS]` -> `tempStreak` goes `1 -> 1 -> 1 -> 1 -> 2`. Current Streak = `2`. Consecutive rest days successfully bridge the gap.
+- **Rest Day at Start of Tracking**:
+  - `[REST, SUCCESS, SUCCESS]` -> `tempStreak` goes `0 -> 1 -> 2`. Current Streak = `2`.
+- **Rest Day after a Missed Day**:
+  - `[SUCCESS, MISSED, REST, SUCCESS]` -> `tempStreak` goes `1 -> 0 -> 0 -> 1`. Current Streak = `1`. The rest day does not retroactively heal a broken streak; it only bridges contiguous active periods.
+- **Changing a Rest Day to a Study Day**:
+  - Changing a `REST_DAY` plan to a study plan resets its category to `PENDING` (if today) or `MISSED`/`SUCCESS` (if completed). Once tasks are added and completed, it becomes `SUCCESS`, upgrading the streak count (e.g., `[SUCCESS, REST, SUCCESS]` streak of `2` becomes `[SUCCESS, SUCCESS, SUCCESS]` streak of `3`).
+- **Changing a Completed/Missed Day to a Rest Day**:
+  - Changing a past `SUCCESS` day to `REST_DAY` decrements the streak count but preserves continuity (bridging). E.g., `[SUCCESS, SUCCESS, SUCCESS]` (streak `3`) becomes `[SUCCESS, REST, SUCCESS]` (streak `2`).
+  - Changing a past `MISSED` day to `REST_DAY` (by creating/updating a plan for that date with status `REST_DAY`) removes the break, connecting any completed days before and after it. E.g., `[SUCCESS, MISSED, SUCCESS]` (streak reset to `1` on day 3) becomes `[SUCCESS, REST, SUCCESS]` (streak of `2` spans across).
+
+### Timezone/Date Boundaries
+- Timezones are detected on the frontend and sent via headers or stored in the user profile. The dates are parsed into `YYYY-MM-DD` strings locally before sending to the backend, ensuring calculations align perfectly with the user's local day boundaries.
 
 ### Handling Historical Edits
-- When a user retroactive marks a past task as complete:
+- When a user retroactively edits a task or plan from a previous day:
   - The plan status for that past date is re-evaluated.
-  - If its status upgrades to `COMPLETED` or `PARTIALLY_COMPLETED`, that date is added to the set of successful days $S$.
-  - The server recalculates both the current and longest streaks across the full set $S$ and updates the cached values.
+  - The server recalculates both the current and longest streaks across the full chronological list of daily categories and updates the cached values in the database.
 
 ---
 
@@ -260,6 +293,7 @@ model NotificationPreference {
 ## 6. Security Architecture
 
 1. **Defense-in-Depth for Authentication**:
+   - **Email/Password MVP**: For the MVP, authentication relies strictly on custom email/password registration, login, logout, and protected routes. Third-party authentication (e.g. Google OAuth) is deferred as a future enhancement.
    - Authentication tokens are generated as compact JSON Web Tokens (JWT) signed with a robust HMAC-SHA256 secret.
    - The token is *never* stored in `localStorage` or `sessionStorage` (preventing retrieval through cross-site scripting vulnerabilities).
    - Stored in an **HttpOnly, Secure, SameSite=Strict** cookie.

@@ -68,7 +68,10 @@ The application tracks:
 * Missed days
 * Completion percentage
 
-The streak is based on clearly defined daily completion rules.
+**Core Streak Rules**:
+* **Successful Day**: A day qualifies if a plan is `COMPLETED` or `PARTIALLY_COMPLETED` (achieving the minimum daily study duration target).
+* **Rest Day**: Users can explicitly mark a day as a `REST_DAY`. Rest days bridge active streaks and do not reset them, but do not increment the streak count.
+* **Missed Day**: A day breaks the streak if it has no plan created (automatic fallback for past days), or is marked as `MISSED` or left incomplete (`TODO`/`IN_PROGRESS`) at the end of the day.
 
 ---
 
@@ -94,10 +97,11 @@ Visualize study activity across days.
 
 Each date can indicate:
 
-* 🟢 Completed
-* 🟡 Partially completed
-* 🔴 Missed
-* ⚪ No plan
+* 🟢 Completed (All tasks completed)
+* 🟡 Partially completed (Time target met)
+* 🌴 Rest Day (Explicitly scheduled rest day)
+* 🔴 Missed (Past days with no plan or marked incomplete/missed)
+* ⚪ No plan yet (For the current day only, not yet missed)
 * 🔵 Future
 
 Users can select a date to view its study plan and history.
