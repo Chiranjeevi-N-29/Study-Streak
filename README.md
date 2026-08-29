@@ -309,23 +309,38 @@ Refer to the [Prisma Schema Spec in Architecture Specification](file:///d:/proje
 
 ---
 
-# 🔐 Security
+# 🔐 Authentication & Security
 
-Security is considered from the beginning.
+StudyStreak employs a secure, production-grade credentials authentication module:
 
-The application will follow practices such as:
+- **Password Safety**: Hashed using `bcrypt` (with 12 salt rounds) before persistence.
+- **Session Tokens**: JWT cookies signed with `JWT_SECRET`, stored in an HTTP-only, Secure (over HTTPS in production), and SameSite=Strict cookie named `token`. This fully defends against XSS and CSRF.
+- **Input Vetting**: Enforces strict payload validation rules on both backend and client inputs using `Zod` schemas.
 
-* Password hashing
-* Authentication
-* Authorization
-* Input validation
-* Secure API design
-* Environment variables
-* No committed secrets
-* User data isolation
-* Proper error handling
+### Authentication Endpoints
+| HTTP Method | API Path | Request Body | Response Payload | Description | Protected |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | `{ name, email, password }` | `{ success: true, user }` | Create user profile and normalization | No |
+| `POST` | `/api/auth/login` | `{ email, password }` | `{ success: true, user }` | Verifies user and sets HTTP-only JWT | No |
+| `POST` | `/api/auth/logout` | None | `{ success: true }` | Clears cookie session token | Yes |
+| `GET` | `/api/auth/me` | None | `{ success: true, user }` | Returns active user profile | Yes |
 
-Users must only be able to access their own study data.
+### Local Setup
+Ensure your local `.env` inside `backend/` has the required configuration variables:
+```env
+PORT=5000
+NODE_ENV=development
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/studystreak?schema=public"
+JWT_SECRET="generate_a_secure_random_string"
+```
+
+### Running Authentication Tests
+You can run automated auth integration and unit tests:
+```bash
+# Run all tests across the monorepo workspaces
+npm run test
+```
+The backend integration tests use a fully mocked Prisma database client to verify API endpoint responses (success status codes, registration conflicts, incorrect credentials, and protected routes) without requiring a live PostgreSQL instance to be active.
 
 ---
 
