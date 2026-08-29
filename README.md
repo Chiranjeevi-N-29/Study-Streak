@@ -1,1 +1,691 @@
 # Study-Streak
+Here’s a **portfolio-quality `README.md`** for your StudyStreak project. You can paste this directly into your repository.
+
+# 🔥 StudyStreak
+
+> **Plan your learning. Build your streak. Become consistent.**
+
+StudyStreak is a full-stack study planning and accountability application designed to help students and developers **plan what they need to learn every day, track completion, maintain study streaks, and understand their learning progress over time.**
+
+The core philosophy is:
+
+**PLAN → STUDY → COMPLETE → REFLECT → ANALYZE → IMPROVE**
+
+---
+
+## 🎯 Problem
+
+Learning consistently is difficult.
+
+Most task-management applications can tell you **what tasks you have**, but they don't strongly focus on:
+
+* Daily learning consistency
+* Study streaks
+* Learning progress
+* Accountability
+* Reflection
+* Long-term skill development
+
+StudyStreak combines these into a single platform.
+
+---
+
+## 🚀 Features
+
+### 📅 Daily Study Planning
+
+Create a study plan for every day.
+
+Each study task can contain:
+
+* Task title
+* Description
+* Category
+* Priority
+* Estimated duration
+* Order
+* Status
+
+Task statuses:
+
+* `TODO`
+* `IN_PROGRESS`
+* `COMPLETED`
+* `PARTIALLY_COMPLETED`
+* `NOT_COMPLETED`
+
+---
+
+### 🔥 Study Streak
+
+Track consistency through a daily streak system.
+
+The application tracks:
+
+* Current streak
+* Longest streak
+* Successful study days
+* Missed days
+* Completion percentage
+
+The streak is based on clearly defined daily completion rules.
+
+---
+
+### 📊 Dashboard
+
+The dashboard provides an overview of the user's learning activity.
+
+It includes:
+
+* Today's study plan
+* Today's tasks
+* Current streak
+* Longest streak
+* Completion percentage
+* Study time
+* Recent activity
+
+---
+
+### 📆 Study Calendar
+
+Visualize study activity across days.
+
+Each date can indicate:
+
+* 🟢 Completed
+* 🟡 Partially completed
+* 🔴 Missed
+* ⚪ No plan
+* 🔵 Future
+
+Users can select a date to view its study plan and history.
+
+---
+
+### 📝 Daily Reflection
+
+At the end of a study day, users can record:
+
+**What did I learn?**
+
+**What did I struggle with?**
+
+**What should I continue tomorrow?**
+
+This creates a personal learning journal over time.
+
+---
+
+### 📈 Learning Analytics
+
+Track long-term learning progress through:
+
+* Weekly completion rate
+* Monthly completion rate
+* Total study hours
+* Average daily study time
+* Completed tasks
+* Missed tasks
+* Category-wise progress
+* Study trends
+* Current streak
+* Longest streak
+
+---
+
+### 🏆 Achievements
+
+Users can unlock achievements based on their progress.
+
+Examples:
+
+* 🌱 First Study Day
+* 🔥 7 Day Streak
+* 🔥 30 Day Streak
+* 💪 50 Day Streak
+* 🏆 100 Day Streak
+* 📚 100 Tasks Completed
+* 📚 500 Tasks Completed
+* ⏱️ 100 Study Hours
+
+---
+
+### 🔔 Study Reminders
+
+Users can configure reminders for:
+
+* Daily study
+* Evening completion
+* Streak at risk
+
+Notifications respect the user's timezone.
+
+---
+
+### 🤖 AI Study Planner
+
+The planned AI module can generate personalized learning plans based on:
+
+* Learning goal
+* Target role
+* Current skill level
+* Available study time
+* Preferred study days
+* Target deadline
+
+The AI can generate:
+
+* Learning roadmap
+* Topics
+* Daily tasks
+* Estimated duration
+* Prerequisites
+* Milestones
+
+Generated plans require user confirmation before being added to the actual study schedule.
+
+---
+
+### 🧠 Adaptive Study Planning
+
+If a user doesn't complete planned tasks, StudyStreak can recommend how to redistribute unfinished work.
+
+The system considers:
+
+* Available time
+* Task difficulty
+* Priority
+* Deadlines
+* Previous completion patterns
+
+The goal is to **adapt the plan without overwhelming the user.**
+
+---
+
+# 🏗️ Architecture
+
+StudyStreak follows a modular full-stack architecture.
+
+```text
+                    ┌─────────────────────┐
+                    │      Frontend       │
+                    │                     │
+                    │  Web Application    │
+                    └──────────┬──────────┘
+                               │
+                               │ REST API
+                               ▼
+                    ┌─────────────────────┐
+                    │       Backend       │
+                    │                     │
+                    │ Authentication      │
+                    │ Study Plans         │
+                    │ Tasks               │
+                    │ Streak Engine       │
+                    │ Analytics           │
+                    │ AI Services         │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │      Database       │
+                    │                     │
+                    │ Users               │
+                    │ Study Plans         │
+                    │ Tasks               │
+                    │ Reflections         │
+                    │ Achievements        │
+                    │ Statistics          │
+                    └─────────────────────┘
+```
+
+---
+
+# 🛠️ Tech Stack
+
+> This section will be updated as the architecture is finalized.
+
+### Frontend
+
+* TypeScript
+* React
+* Modern CSS / UI framework
+* Responsive design
+
+### Backend
+
+* TypeScript
+* REST APIs
+* Authentication
+* Business logic services
+
+### Database
+
+* Relational database
+* Database migrations
+* ORM / query layer
+
+### Testing
+
+* Unit testing
+* Integration testing
+* API testing
+* Frontend testing
+
+### Development
+
+* Git
+* GitHub
+* Environment variables
+* ESLint
+* Prettier
+
+### Future
+
+* AI integration
+* Background jobs
+* Notifications
+* Analytics
+* Production deployment
+
+---
+
+# 📂 Project Structure
+
+The project will follow a modular structure similar to:
+
+```text
+study-streak/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── features/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   ├── types/
+│   │   └── utils/
+│   │
+│   └── package.json
+│
+├── backend/
+│   ├── src/
+│   │   ├── modules/
+│   │   ├── controllers/
+│   │   ├── services/
+│   │   ├── middleware/
+│   │   ├── routes/
+│   │   ├── database/
+│   │   ├── utils/
+│   │   └── config/
+│   │
+│   └── package.json
+│
+├── docs/
+│
+├── .env.example
+├── .gitignore
+├── README.md
+└── package.json
+```
+
+The exact structure may evolve as the project grows.
+
+---
+
+# 🗄️ Core Data Model
+
+The initial domain model is expected to contain:
+
+```text
+User
+ │
+ ├── Study Plans
+ │      │
+ │      └── Study Tasks
+ │
+ ├── Daily Reflections
+ │
+ ├── Achievements
+ │
+ └── Statistics
+```
+
+### User
+
+```text
+id
+name
+email
+passwordHash
+timezone
+createdAt
+updatedAt
+```
+
+### Study Plan
+
+```text
+id
+userId
+date
+title
+description
+minimumStudyTarget
+status
+createdAt
+updatedAt
+```
+
+### Study Task
+
+```text
+id
+studyPlanId
+title
+description
+category
+priority
+estimatedDuration
+order
+status
+createdAt
+updatedAt
+```
+
+### Daily Reflection
+
+```text
+id
+userId
+date
+learned
+struggled
+nextSteps
+notes
+createdAt
+updatedAt
+```
+
+The final schema will be determined during implementation.
+
+---
+
+# 🔐 Security
+
+Security is considered from the beginning.
+
+The application will follow practices such as:
+
+* Password hashing
+* Authentication
+* Authorization
+* Input validation
+* Secure API design
+* Environment variables
+* No committed secrets
+* User data isolation
+* Proper error handling
+
+Users must only be able to access their own study data.
+
+---
+
+# 🧪 Testing Strategy
+
+StudyStreak will use multiple levels of testing.
+
+### Unit Tests
+
+Important business logic such as:
+
+* Streak calculations
+* Completion calculations
+* Achievement conditions
+* Analytics calculations
+* Date handling
+
+### Integration Tests
+
+Test interactions between:
+
+```text
+API → Service → Database
+```
+
+### Frontend Tests
+
+Test:
+
+* Components
+* User interactions
+* Forms
+* Task completion
+* Dashboard states
+
+---
+
+# 🌱 Development Roadmap
+
+## Phase 1 — Foundation
+
+* [ ] Project setup
+* [ ] Architecture
+* [ ] Database
+* [ ] Authentication
+* [ ] Development tooling
+
+## Phase 2 — Core Study System
+
+* [ ] Daily study plans
+* [ ] Study tasks
+* [ ] Task completion
+* [ ] Streak engine
+* [ ] Dashboard
+* [ ] Study calendar
+* [ ] Daily reflections
+
+## Phase 3 — Analytics & Gamification
+
+* [ ] Analytics
+* [ ] Progress charts
+* [ ] Achievements
+* [ ] Study statistics
+* [ ] Weekly reports
+
+## Phase 4 — Productivity
+
+* [ ] Study reminders
+* [ ] Streak protection
+* [ ] Productivity insights
+* [ ] Time tracking
+
+## Phase 5 — AI
+
+* [ ] AI study planner
+* [ ] AI-generated roadmap
+* [ ] Adaptive study planning
+* [ ] Personalized recommendations
+
+## Phase 6 — Production
+
+* [ ] Security audit
+* [ ] Performance optimization
+* [ ] Automated testing
+* [ ] CI/CD
+* [ ] Production deployment
+* [ ] Monitoring
+* [ ] Documentation
+
+---
+
+# 🔄 Development Workflow
+
+StudyStreak is developed incrementally.
+
+Each feature follows:
+
+```text
+Plan
+ ↓
+Design
+ ↓
+Implement
+ ↓
+Test
+ ↓
+Review
+ ↓
+Commit
+ ↓
+Push
+```
+
+Git commits should represent meaningful changes.
+
+Example:
+
+```text
+feat: add authentication
+feat: add daily study plans
+feat: implement study tasks
+feat: implement streak engine
+feat: add study calendar
+feat: add analytics
+
+fix: prevent duplicate daily plans
+fix: correct streak calculation
+
+test: add streak edge case tests
+
+refactor: simplify study plan service
+```
+
+---
+
+# 🚀 Getting Started
+
+## Prerequisites
+
+Install:
+
+* Node.js
+* npm
+* Git
+* Database required by the project
+
+Check versions:
+
+```bash
+node --version
+npm --version
+git --version
+```
+
+---
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/study-streak.git
+cd study-streak
+```
+
+---
+
+## Install Dependencies
+
+```bash
+npm install
+```
+
+If frontend and backend use separate packages:
+
+```bash
+cd frontend
+npm install
+
+cd ../backend
+npm install
+```
+
+---
+
+## Environment Variables
+
+Create environment files based on:
+
+```text
+.env.example
+```
+
+Never commit actual secrets.
+
+Example:
+
+```env
+DATABASE_URL=
+JWT_SECRET=
+API_URL=
+AI_API_KEY=
+```
+
+---
+
+## Run the Application
+
+Development commands will be documented here once the project architecture is finalized.
+
+Example:
+
+```bash
+npm run dev
+```
+
+---
+
+# 📌 Current Status
+
+**🚧 Under Active Development**
+
+StudyStreak is being developed incrementally, with each major feature tested and committed separately.
+
+---
+
+# 🎯 Project Goal
+
+The ultimate goal of StudyStreak is to create a system that helps a learner answer three questions every day:
+
+> **What should I learn today?**
+
+> **Did I actually do it?**
+
+> **Am I becoming more consistent over time?**
+
+The application is designed not just to track tasks, but to help users **build the habit of learning consistently.**
+
+---
+
+# 📜 License
+
+License information will be added before the first production release.
+
+---
+
+## 👨‍💻 Author
+
+**Chiranjeevi N**
+
+Built as a full-stack software engineering project focused on:
+
+* Software development
+* System design
+* Backend engineering
+* Frontend engineering
+* Database design
+* Testing
+* AI integration
+* Production deployment
