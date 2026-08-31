@@ -18,8 +18,25 @@ vi.mock('../../services/api.js', () => {
       register: vi.fn(),
       logout: vi.fn(),
     },
+    studyPlanApi: {
+      getToday: vi.fn().mockResolvedValue({ success: true, studyPlan: null }),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    },
+    studyTaskApi: {
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    },
     streakApi: {
-      get: vi.fn(),
+      get: vi.fn().mockResolvedValue({
+        success: true,
+        currentStreak: 0,
+        longestStreak: 0,
+        successfulStudyDays: 0,
+        lastActiveDate: null,
+      }),
     },
   };
 });
@@ -181,15 +198,15 @@ describe('Frontend Routing & AppShell Suite', () => {
 
     // Welcome message should render
     await waitFor(() => {
-      expect(screen.getByText('Welcome back, Alice!')).toBeInTheDocument();
+      expect(screen.getByText(/Good.*, Alice/i)).toBeInTheDocument();
     });
 
     // Check API fetch calls
     expect(api.streakApi.get).toHaveBeenCalledTimes(1);
 
     // Verify streak card numbers are loaded
-    expect(screen.getByText('5 days')).toBeInTheDocument();
-    expect(screen.getByText('12 days')).toBeInTheDocument();
-    expect(screen.getByText('19 days')).toBeInTheDocument();
+    expect(screen.getByText('5')).toBeInTheDocument();
+    expect(screen.getByText('12')).toBeInTheDocument();
+    expect(screen.getByText('19')).toBeInTheDocument();
   });
 });
