@@ -20,6 +20,9 @@ vi.mock('../../config/db.js', () => {
         update: vi.fn(),
         delete: vi.fn(),
       },
+      streak: {
+        upsert: vi.fn(),
+      },
     },
   };
 });
@@ -62,6 +65,15 @@ describe('Study Plans API Endpoints', () => {
       if (args.where.id === testUser.id) return Promise.resolve(testUser as any);
       if (args.where.id === testUserB.id) return Promise.resolve(testUserB as any);
       return Promise.resolve(null);
+    });
+    vi.mocked(prisma.studyPlan.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.streak.upsert).mockResolvedValue({
+      id: 'streak-id',
+      userId: testUser.id,
+      currentStreak: 0,
+      longestStreak: 0,
+      lastActiveDate: null,
+      updatedAt: new Date(),
     });
   });
 

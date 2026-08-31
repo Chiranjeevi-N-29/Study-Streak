@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext.js';
-import { studyPlanApi, studyTaskApi } from '../../services/api.js';
-import type { StudyPlan, StudyTask, Priority, Status } from '../../services/api.js';
+import { studyPlanApi, studyTaskApi, streakApi } from '../../services/api.js';
+import type { StudyPlan, StudyTask, Priority, Status, StreakInfo } from '../../services/api.js';
 import './StudyPlanner.css';
 
 export const StudyPlanner: React.FC = () => {
@@ -12,6 +12,8 @@ export const StudyPlanner: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   
   const [plan, setPlan] = useState<StudyPlan | null>(null);
+  const [streak, setStreak] = useState<StreakInfo | null>(null);
+  const [streakLoading, setStreakLoading] = useState<boolean>(true);
   
   // Plan creation form state
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
@@ -33,6 +35,20 @@ export const StudyPlanner: React.FC = () => {
   const [taskActDuration, setTaskActDuration] = useState<number>(0);
   const [taskStatus, setTaskStatus] = useState<Status>('TODO');
 
+  const triggerStreakRefresh = async () => {
+    try {
+      const res = await streakApi.get();
+      setStreak({
+        currentStreak: res.currentStreak,
+        longestStreak: res.longestStreak,
+        successfulStudyDays: res.successfulStudyDays,
+        lastActiveDate: res.lastActiveDate,
+      });
+    } catch (err) {
+      console.error('Failed to refresh streak data:', err);
+    }
+  };
+
   useEffect(() => {
     let active = true;
     const fetchTodayPlan = async () => {
@@ -51,7 +67,30 @@ export const StudyPlanner: React.FC = () => {
         }
       }
     };
+
+    const fetchStreakData = async () => {
+      try {
+        const res = await streakApi.get();
+        if (active) {
+          setStreak({
+            currentStreak: res.currentStreak,
+            longestStreak: res.longestStreak,
+            successfulStudyDays: res.successfulStudyDays,
+            lastActiveDate: res.lastActiveDate,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load streak data:', err);
+      } finally {
+        if (active) {
+          setStreakLoading(false);
+        }
+      }
+    };
+
     fetchTodayPlan();
+    fetchStreakData();
+
     return () => {
       active = false;
     };
@@ -86,6 +125,7 @@ export const StudyPlanner: React.FC = () => {
       setPlanTitle('');
       setPlanDesc('');
       setPlanTarget(120);
+      triggerStreakRefresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create study plan');
     } finally {
@@ -110,6 +150,7 @@ export const StudyPlanner: React.FC = () => {
         minimumStudyTarget: res.studyPlan.minimumStudyTarget,
       });
       setIsEditingPlan(false);
+      triggerStreakRefresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update study plan settings');
     } finally {
@@ -125,6 +166,7 @@ export const StudyPlanner: React.FC = () => {
         ...plan,
         status: res.studyPlan.status,
       });
+      triggerStreakRefresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update plan status');
     }
@@ -138,6 +180,7 @@ export const StudyPlanner: React.FC = () => {
     try {
       await studyPlanApi.delete(plan.id);
       setPlan(null);
+      triggerStreakRefresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete study plan');
     } finally {
@@ -207,6 +250,7 @@ export const StudyPlanner: React.FC = () => {
         setPlan({ ...plan, tasks: updatedTasks });
       }
       setShowTaskForm(false);
+      triggerStreakRefresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save task');
     } finally {
@@ -223,6 +267,7 @@ export const StudyPlanner: React.FC = () => {
         t.id === task.id ? res.studyTask : t
       );
       setPlan({ ...plan, tasks: updatedTasks });
+      triggerStreakRefresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update task status');
     }
@@ -236,6 +281,7 @@ export const StudyPlanner: React.FC = () => {
       await studyTaskApi.delete(taskId);
       const updatedTasks = (plan.tasks || []).filter((t) => t.id !== taskId);
       setPlan({ ...plan, tasks: updatedTasks });
+      triggerStreakRefresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete task');
     }
@@ -258,6 +304,7 @@ export const StudyPlanner: React.FC = () => {
         ...plan,
         tasks: newTasks.map((t, idx) => ({ ...t, order: idx })),
       });
+      triggerStreakRefresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reorder tasks');
     }
@@ -290,6 +337,31 @@ export const StudyPlanner: React.FC = () => {
         </div>
         <button className="logout-btn" onClick={handleLogout}>Log Out</button>
       </header>
+
+      {/* Streak Stats Section */}
+      <div className="streak-container">
+        <div className="streak-stat-card">
+          <span className="streak-icon">🔥</span>
+          <div className="streak-info">
+            <h3>{streakLoading ? '...' : `${streak?.currentStreak ?? 0} days`}</h3>
+            <p>Current Streak</p>
+          </div>
+        </div>
+        <div className="streak-stat-card">
+          <span className="streak-icon">🏆</span>
+          <div className="streak-info">
+            <h3>{streakLoading ? '...' : `${streak?.longestStreak ?? 0} days`}</h3>
+            <p>Longest Streak</p>
+          </div>
+        </div>
+        <div className="streak-stat-card">
+          <span className="streak-icon">📅</span>
+          <div className="streak-info">
+            <h3>{streakLoading ? '...' : `${streak?.successfulStudyDays ?? 0} days`}</h3>
+            <p>Successful Study Days</p>
+          </div>
+        </div>
+      </div>
 
       {/* Global error alerts */}
       {error && <div className="alert-error">{error}</div>}

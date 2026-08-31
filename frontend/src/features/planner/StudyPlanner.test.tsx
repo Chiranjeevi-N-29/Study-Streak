@@ -28,6 +28,15 @@ vi.mock('../../services/api.js', () => {
       delete: vi.fn(),
       reorder: vi.fn(),
     },
+    streakApi: {
+      get: vi.fn().mockResolvedValue({
+        success: true,
+        currentStreak: 0,
+        longestStreak: 0,
+        successfulStudyDays: 0,
+        lastActiveDate: null,
+      }),
+    },
   };
 });
 

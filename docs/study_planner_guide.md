@@ -22,6 +22,61 @@ The Study Planner is the core dashboard page where authenticated users manage th
 
 ---
 
+## Streak Engine (Milestone 4)
+
+Consistency is tracked via a timezone-aware Streak Engine. The system computes user consistency daily starting from the user's registration date (`D_start`) to today (`D_today`).
+
+### Streak Business Rules
+
+Each day's study activity is dynamically categorized as one of four states:
+
+1. **`SUCCESS`**:
+   - The user completes all planned `StudyTasks` on that date (`COMPLETED`).
+   - OR total actual duration (`actualDuration`) of completed tasks is greater than or equal to the plan's `minimumStudyTarget` (`PARTIALLY_COMPLETED`).
+   - *Result*: Increments the streak by 1 day and updates `longestStreak` if exceeded.
+2. **`REST_DAY`**:
+   - The study plan for the date is explicitly marked as `REST_DAY`.
+   - *Result*: Does **NOT** break the streak, does **NOT** increment the streak count. It acts as a bridge day preserving the active streak (e.g., `SUCCESS` → `REST` → `SUCCESS` results in a streak of 2).
+3. **`MISSED`**:
+   - A past day had no study plan.
+   - OR a past day had a plan but did not meet the `SUCCESS` or `REST` criteria.
+   - *Result*: Resets the current streak to `0`.
+4. **`PENDING`**:
+   - Applies only to today (or future days). Today has no plan yet, or has a plan with status `TODO`/`IN_PROGRESS` that has not yet qualified as `SUCCESS`.
+   - *Result*: Does **NOT** break the current streak and does **NOT** increment it. The active streak from yesterday is preserved.
+
+### Timezone & Local Calendar Dates
+- All calculations are anchored to the user's local timezone (e.g. `Asia/Kolkata` or `America/New_York`).
+- `D_start` is the registration date formatted in the user's timezone.
+- `D_today` is today's local date formatted in the user's timezone.
+- This prevents UTC offset mismatches from falsely breaking or resetting streaks.
+
+### Cache & Automatic Recalculation
+- Streak metrics (`currentStreak`, `longestStreak`, `lastActiveDate`) are cached in the `Streak` database table (one unique row per user).
+- **Auto-Recalculation**: Recalculation is triggered automatically on the backend service layer whenever plans or tasks are created, updated, deleted, or reordered.
+- **Historical Edits**: Modifying historical plans/tasks triggers a full, chronological recalculation from the original source data, ensuring the cache is always self-healing and accurate.
+
+---
+
+## Streak API (`/api/streak`)
+
+| Method | Route | Description | Auth |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/streak` | Fetch the current user's streak details and successful days count | JWT |
+
+#### Example JSON Response
+```json
+{
+  "success": true,
+  "currentStreak": 3,
+  "longestStreak": 5,
+  "successfulStudyDays": 12,
+  "lastActiveDate": "2026-08-30"
+}
+```
+
+---
+
 ## Database Relationships
 
 The database model mappings are defined in the schema:

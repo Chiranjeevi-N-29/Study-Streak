@@ -164,3 +164,18 @@ export const studyTaskApi = {
     });
   },
 };
+
+export interface StreakInfo {
+  currentStreak: number;
+  longestStreak: number;
+  successfulStudyDays: number;
+  lastActiveDate: string | null;
+}
+
+export const streakApi = {
+  get: () => {
+    return request<StreakInfo & { success: boolean }>('/streak', {
+      method: 'GET',
+    });
+  },
+};

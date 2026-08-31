@@ -1,5 +1,6 @@
 import { prisma } from '../../config/db.js';
 import { CreateStudyPlanInput, UpdateStudyPlanInput } from './study-plan.schema.js';
+import { recalculateUserStreak } from '../streak/streak.service.js';
 
 export const getLocalDateInTimezone = (timezone: string): string => {
   try {
@@ -35,7 +36,7 @@ export const createStudyPlan = async (userId: string, input: CreateStudyPlanInpu
     throw error;
   }
 
-  return prisma.studyPlan.create({
+  const plan = await prisma.studyPlan.create({
     data: {
       userId,
       date: input.date,
@@ -45,6 +46,9 @@ export const createStudyPlan = async (userId: string, input: CreateStudyPlanInpu
       status: input.status,
     },
   });
+
+  await recalculateUserStreak(userId);
+  return plan;
 };
 
 export const getTodayStudyPlan = async (userId: string, timezone: string) => {
@@ -133,7 +137,7 @@ export const updateStudyPlan = async (userId: string, id: string, input: UpdateS
     throw error;
   }
 
-  return prisma.studyPlan.update({
+  const updatedPlan = await prisma.studyPlan.update({
     where: { id },
     data: {
       title: input.title !== undefined ? input.title : undefined,
@@ -142,6 +146,9 @@ export const updateStudyPlan = async (userId: string, id: string, input: UpdateS
       status: input.status !== undefined ? input.status : undefined,
     },
   });
+
+  await recalculateUserStreak(userId);
+  return updatedPlan;
 };
 
 export const deleteStudyPlan = async (userId: string, id: string) => {
@@ -165,5 +172,6 @@ export const deleteStudyPlan = async (userId: string, id: string) => {
     where: { id },
   });
 
+  await recalculateUserStreak(userId);
   return { success: true };
 };

@@ -14,6 +14,7 @@ vi.mock('../../config/db.js', () => {
       },
       studyPlan: {
         findUnique: vi.fn(),
+        findMany: vi.fn(),
       },
       studyTask: {
         findUnique: vi.fn(),
@@ -21,6 +22,9 @@ vi.mock('../../config/db.js', () => {
         create: vi.fn(),
         update: vi.fn(),
         delete: vi.fn(),
+      },
+      streak: {
+        upsert: vi.fn(),
       },
       $transaction: vi.fn(),
     },
@@ -81,6 +85,15 @@ describe('Study Tasks API Endpoints', () => {
       if (args.where.id === testUser.id) return Promise.resolve(testUser as any);
       if (args.where.id === testUserB.id) return Promise.resolve(testUserB as any);
       return Promise.resolve(null);
+    });
+    vi.mocked(prisma.studyPlan.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.streak.upsert).mockResolvedValue({
+      id: 'streak-id',
+      userId: testUser.id,
+      currentStreak: 0,
+      longestStreak: 0,
+      lastActiveDate: null,
+      updatedAt: new Date(),
     });
   });
 

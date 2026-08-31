@@ -1,5 +1,6 @@
 import { prisma } from '../../config/db.js';
 import { CreateStudyTaskInput, UpdateStudyTaskInput } from './study-task.schema.js';
+import { recalculateUserStreak } from '../streak/streak.service.js';
 
 export const createStudyTask = async (userId: string, planId: string, input: CreateStudyTaskInput) => {
   const plan = await prisma.studyPlan.findUnique({
@@ -26,7 +27,7 @@ export const createStudyTask = async (userId: string, planId: string, input: Cre
   });
   const order = maxOrderTask ? maxOrderTask.order + 1 : 0;
 
-  return prisma.studyTask.create({
+  const createdTask = await prisma.studyTask.create({
     data: {
       studyPlanId: planId,
       title: input.title,
@@ -37,6 +38,9 @@ export const createStudyTask = async (userId: string, planId: string, input: Cre
       order,
     },
   });
+
+  await recalculateUserStreak(userId);
+  return createdTask;
 };
 
 export const updateStudyTask = async (userId: string, taskId: string, input: UpdateStudyTaskInput) => {
@@ -57,7 +61,7 @@ export const updateStudyTask = async (userId: string, taskId: string, input: Upd
     throw error;
   }
 
-  return prisma.studyTask.update({
+  const updatedTask = await prisma.studyTask.update({
     where: { id: taskId },
     data: {
       title: input.title !== undefined ? input.title : undefined,
@@ -69,6 +73,9 @@ export const updateStudyTask = async (userId: string, taskId: string, input: Upd
       status: input.status !== undefined ? input.status : undefined,
     },
   });
+
+  await recalculateUserStreak(userId);
+  return updatedTask;
 };
 
 export const deleteStudyTask = async (userId: string, taskId: string) => {
@@ -93,6 +100,7 @@ export const deleteStudyTask = async (userId: string, taskId: string) => {
     where: { id: taskId },
   });
 
+  await recalculateUserStreak(userId);
   return { success: true };
 };
 
@@ -136,5 +144,6 @@ export const reorderStudyTasks = async (userId: string, planId: string, orderedT
     )
   );
 
+  await recalculateUserStreak(userId);
   return { success: true };
 };
