@@ -5,7 +5,7 @@ import type { StudyPlan, StudyTask, Priority, Status, StreakInfo } from '../../s
 import './StudyPlanner.css';
 
 export const StudyPlanner: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   
   const [loading, setLoading] = useState<boolean>(true);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -96,13 +96,6 @@ export const StudyPlanner: React.FC = () => {
     };
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Logout failed');
-    }
-  };
 
   // Plan actions
   const handleCreatePlan = async (e: React.FormEvent) => {
@@ -329,14 +322,12 @@ export const StudyPlanner: React.FC = () => {
 
   return (
     <div className="planner-container">
-      {/* Header */}
-      <header className="planner-header">
-        <div className="header-title">
-          <h1>🔥 StudyStreak</h1>
-          <p>Logged in as <strong>{user?.name}</strong> • Timezone: <code>{user?.timezone}</code></p>
-        </div>
-        <button className="logout-btn" onClick={handleLogout}>Log Out</button>
-      </header>
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '28px', margin: '0 0 6px', fontWeight: '700', color: 'var(--text-h)' }}>Study Planner</h2>
+        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '15px' }}>
+          Manage today's plan and tasks to stay on track. Timezone: <code>{user?.timezone}</code>
+        </p>
+      </div>
 
       {/* Streak Stats Section */}
       <div className="streak-container">

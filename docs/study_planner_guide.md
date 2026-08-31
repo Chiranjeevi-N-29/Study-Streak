@@ -122,6 +122,34 @@ The database model mappings are defined in the schema:
 | `DELETE` | `/api/tasks/:id` | Delete task | JWT |
 | `PUT` | `/api/study-plans/:planId/tasks/reorder` | Reorder task IDs sequence (JSON body: `orderedTaskIds`) | JWT |
 
+
+---
+
+## Frontend Architecture (Milestone 5)
+
+### Routing Structure
+The frontend application uses `react-router-dom` to implement clean, nested routing paths protected by authentication states:
+
+- `/login` (Public, wrapped in `<GuestRoute>` to redirect active sessions back to `/app`)
+- `/register` (Public, wrapped in `<GuestRoute>`)
+- `/app` (Protected dashboard, displays welcome header and streak metrics cards)
+- `/app/planner` (Protected daily study planner)
+- `/app/calendar` (Protected placeholder roadmap view)
+- `/app/analytics` (Protected placeholder roadmap view)
+- `/app/reflections` (Protected placeholder roadmap view)
+- `/app/achievements` (Protected placeholder roadmap view)
+- `/settings` (Protected placeholder roadmap settings view)
+
+### Authentication-Aware Routing
+- **ProtectedRoute**: Intercepts access to authenticated `/app/*` and `/settings` routes, redirecting unauthenticated sessions to `/login`.
+- **GuestRoute**: Intercepts public access to `/login` and `/register` when a session is active, redirecting users to `/app`.
+- **Session Loading**: Both guards await the completion of the `/api/auth/me` bootstrap check before performing redirects.
+
+### Design System & Theme Behavior
+- **CSS Variables & Tokens**: Configured in `index.css` to govern colors, margins/padding, typography, border-radius, and shadow properties across both themes.
+- **Theme Switcher**: Supported via a `ThemeProvider` context. Manual switches toggle a `data-theme` attribute on the `document.documentElement`, falling back to `window.matchMedia('(prefers-color-scheme: dark)')` system defaults. Settings are persisted inside `localStorage`.
+- **UI Primitives (`UIPrimitives.css`)**: Implements clean, reusable primitives (Button, Input, Textarea, Select, Checkbox, Card, Badge, Modal, Spinner, Alert, EmptyState, LoadingState) mapped directly to design system CSS tokens.
+
 ---
 
 ## Local Development & Setup

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './AuthContext.js';
+import '../../components/UIPrimitives.css';
 
 export const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -39,7 +40,7 @@ export const RegisterPage: React.FC = () => {
 
     try {
       await register(name, email, password);
-      navigate('/');
+      navigate('/app');
     } catch {
       // Error is stored in AuthContext and displayed
     }
@@ -47,77 +48,82 @@ export const RegisterPage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80svh', padding: '16px' }}>
-      <div style={{ background: 'var(--code-bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '32px', width: '100%', maxWidth: '400px', boxShadow: 'var(--shadow)', textAlign: 'left' }}>
-        <h1 style={{ fontSize: '32px', marginTop: '0', marginBottom: '8px', textAlign: 'center' }}>Create Account</h1>
-        <p style={{ fontSize: '15px', color: 'var(--text)', marginBottom: '24px', textAlign: 'center' }}>Join StudyStreak to start consistent daily learning</p>
+      <div className="card-primitive" style={{ width: '100%', maxWidth: '400px', padding: '32px', textAlign: 'left' }}>
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <span style={{ fontSize: '48px', display: 'inline-block', marginBottom: '8px' }}>🔥</span>
+          <h1 style={{ fontSize: '28px', margin: '0 0 6px', fontWeight: '700', color: 'var(--text-h)' }}>Create Account</h1>
+          <p style={{ fontSize: '14px', color: 'var(--text-muted)', margin: 0 }}>Join StudyStreak to start consistent daily learning</p>
+        </div>
         
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div>
-            <label htmlFor="name" style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'var(--text-h)', marginBottom: '6px' }}>Your Name</label>
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">Your Name</label>
             <input
               id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Chiranjeevi"
-              style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '4px', background: 'var(--bg)', color: 'var(--text-h)', boxSizing: 'border-box' }}
+              className="input-field"
             />
           </div>
 
-          <div>
-            <label htmlFor="email" style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'var(--text-h)', marginBottom: '6px' }}>Email Address</label>
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">Email Address</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="user@example.com"
-              style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '4px', background: 'var(--bg)', color: 'var(--text-h)', boxSizing: 'border-box' }}
+              className="input-field"
             />
           </div>
           
-          <div>
-            <label htmlFor="password" style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'var(--text-h)', marginBottom: '6px' }}>Password</label>
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 8 chars, letter + number"
-              style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '4px', background: 'var(--bg)', color: 'var(--text-h)', boxSizing: 'border-box' }}
+              className="input-field"
             />
           </div>
 
-          <div>
-            <label htmlFor="confirmPassword" style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: 'var(--text-h)', marginBottom: '6px' }}>Confirm Password</label>
+          <div className="form-group">
+            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
             <input
               id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Repeat your password"
-              style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '4px', background: 'var(--bg)', color: 'var(--text-h)', boxSizing: 'border-box' }}
+              className="input-field"
             />
           </div>
 
           {(formError || error) && (
-            <div style={{ padding: '10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '4px', color: '#ef4444', fontSize: '14px' }}>
-              {formError || error}
+            <div className="alert-primitive alert-error" style={{ margin: '8px 0' }}>
+              <span>⚠️</span>
+              <div>{formError || error}</div>
             </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            style={{ width: '100%', padding: '12px', background: 'var(--accent)', border: 'none', borderRadius: '4px', color: '#fff', fontSize: '16px', fontWeight: '500', cursor: 'pointer', transition: 'opacity 0.2s', opacity: loading ? 0.7 : 1 }}
+            className="btn btn-primary"
+            style={{ width: '100%', padding: '12px' }}
           >
             {loading ? 'Registering...' : 'Sign Up'}
           </button>
         </form>
 
-        <p style={{ marginTop: '24px', fontSize: '14px', color: 'var(--text)', textAlign: 'center' }}>
+        <p style={{ marginTop: '24px', fontSize: '14px', color: 'var(--text-muted)', textAlign: 'center', margin: '24px 0 0' }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: '500' }}>Log In</Link>
+          <Link to="/login" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '600' }}>Log In</Link>
         </p>
       </div>
     </div>
