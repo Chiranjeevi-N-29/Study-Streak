@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './features/auth/AuthContext.js';
 import { LoginPage } from './features/auth/LoginPage.js';
 import { RegisterPage } from './features/auth/RegisterPage.js';
-import { DashboardPlaceholder } from './features/dashboard/DashboardPlaceholder.js';
+import { StudyPlanner } from './features/planner/StudyPlanner.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
 import './App.css';
 
@@ -20,7 +20,7 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <DashboardPlaceholder />
+                <StudyPlanner />
               </ProtectedRoute>
             }
           />
@@ -34,3 +34,4 @@ function App() {
 }
 
 export default App;
+

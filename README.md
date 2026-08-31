@@ -382,17 +382,17 @@ Test:
 
 ## Phase 1 — Foundation
 
-* [ ] Project setup
-* [ ] Architecture
-* [ ] Database
-* [ ] Authentication
-* [ ] Development tooling
+* [x] Project setup
+* [x] Architecture
+* [x] Database
+* [x] Authentication
+* [x] Development tooling
 
 ## Phase 2 — Core Study System
 
-* [ ] Daily study plans
-* [ ] Study tasks
-* [ ] Task completion
+* [x] Daily study plans
+* [x] Study tasks
+* [x] Task completion
 * [ ] Streak engine
 * [ ] Dashboard
 * [ ] Study calendar

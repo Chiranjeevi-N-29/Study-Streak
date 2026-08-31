@@ -3,6 +3,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './modules/auth/auth.routes.js';
+import studyPlanRoutes from './modules/study-plan/study-plan.routes.js';
+import studyTaskRoutes from './modules/study-task/study-task.routes.js';
 
 const app = express();
 
@@ -17,6 +19,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Auth Routes
 app.use('/api/auth', authRoutes);
+
+// Study Plan and Task Routes
+app.use('/api/study-plans', studyPlanRoutes);
+app.use('/api/tasks', studyTaskRoutes);
 
 // Health Check Endpoint
 app.get('/api/health', (req, res) => {
