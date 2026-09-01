@@ -1,11 +1,8 @@
-# Study-Streak
-Here’s a **portfolio-quality `README.md`** for your StudyStreak project. You can paste this directly into your repository.
-
 # 🔥 StudyStreak
 
 > **Plan your learning. Build your streak. Become consistent.**
 
-StudyStreak is a full-stack study planning and accountability application designed to help students and developers **plan what they need to learn every day, track completion, maintain study streaks, and understand their learning progress over time.**
+StudyStreak is a production-hardened, full-stack study planning and accountability application designed to help students and developers **plan what they need to learn every day, track task completion, maintain study streaks, record daily reflections, unlock achievements, and understand their learning progress over time.**
 
 The core philosophy is:
 
@@ -13,589 +10,242 @@ The core philosophy is:
 
 ---
 
-## 🎯 Problem
-
-Learning consistently is difficult.
-
-Most task-management applications can tell you **what tasks you have**, but they don't strongly focus on:
-
-* Daily learning consistency
-* Study streaks
-* Learning progress
-* Accountability
-* Reflection
-* Long-term skill development
-
-StudyStreak combines these into a single platform.
-
----
-
 ## 🚀 Features
 
-### 📅 Daily Study Planning
+### 📅 Daily Study Planning & Tasks
+- Create and organize study plans for any date.
+- Granular task management: categories, priorities (`LOW`, `MEDIUM`, `HIGH`), estimated vs actual duration, task ordering, and status tracking (`TODO`, `IN_PROGRESS`, `COMPLETED`, `PARTIALLY_COMPLETED`, `NOT_COMPLETED`, `REST_DAY`).
 
-Create a study plan for every day.
+### 🔥 Deterministic Streak Engine
+- Automatic calculation of current streak, longest streak, and last active study date.
+- Robust business rules: `COMPLETED` and `PARTIALLY_COMPLETED` plans qualify as successful study days. `REST_DAY` bridges consecutive study days without breaking streaks. Past unfulfilled days automatically fall back to `MISSED`.
 
-Each study task can contain:
+### 📆 Study Calendar & Historical View
+- Visual month-grid calendar mapping daily study status (Completed 🟢, Partial 🟡, Rest Day 🌴, Missed 🔴, Future 🔵).
+- Allows users to inspect any past study day's plan and task breakdown.
 
-* Task title
-* Description
-* Category
-* Priority
-* Estimated duration
-* Order
-* Status
+### 📝 Daily Reflections & Learning Journal
+- Capture end-of-day reflections answering: *What did I learn? What did I struggle with? What should I improve tomorrow?*
 
-Task statuses:
+### 📈 Learning Analytics & Progress Intelligence
+- Visual progress charts: weekly/monthly completion rates, total study duration, daily average study time, category breakdowns, and streak trends.
 
-* `TODO`
-* `IN_PROGRESS`
-* `COMPLETED`
-* `PARTIALLY_COMPLETED`
-* `NOT_COMPLETED`
+### 🏆 Achievements & Gamification
+- Predefined achievement milestones across streaks, completed tasks, study hours, daily reflections, and consistent study days.
+- Idempotent evaluation engine preventing duplicate unlocks.
 
----
+### 🔔 Smart Notifications & Study Reminders
+- Timezone-aware study and reflection reminders matching users' local times (`Asia/Kolkata`, `America/New_York`, `UTC`, etc.).
+- Notifications center in application header with unread badge count, dropdown drawer, and opt-in browser notifications.
 
-### 🔥 Study Streak
-
-Track consistency through a daily streak system.
-
-The application tracks:
-
-* Current streak
-* Longest streak
-* Successful study days
-* Missed days
-* Completion percentage
-
-**Core Streak Rules**:
-* **COMPLETED**: A StudyPlan is COMPLETED when all planned StudyTasks are completed.
-* **PARTIALLY_COMPLETED**: A StudyPlan is PARTIALLY_COMPLETED when at least one task is completed and the total actual/qualifying study time is greater than or equal to `minimumStudyTarget`.
-* **SUCCESSFUL DAY**: A day qualifies as a successful study day when the StudyPlan status is either COMPLETED or PARTIALLY_COMPLETED.
-* **REST_DAY**: An explicitly marked REST_DAY does not increase the streak, does not break the streak, and can bridge successful study days.
-* **MISSED**: A MISSED day breaks the current streak and does not count toward successful study days (automatic fallback for past days with no plan or left incomplete).
+### 🛡️ Production Hardening & Security
+- **Startup Validation**: Environment variables validated at startup using Zod (`DATABASE_URL`, `JWT_SECRET`, `NODE_ENV`, `FRONTEND_URL`).
+- **Security Headers**: `helmet` integration enforcing frameguard, X-Content-Type-Options, HSTS, and Referrer-Policy.
+- **Rate Limiting**: Protection against brute-force login/registration attempts (10 req / 15 mins) and general API protection (200 req / 15 mins).
+- **Session Security**: HTTP-only, SameSite=Strict JWT authentication cookies preventing XSS/CSRF token theft.
+- **Strict Authorization**: Every resource endpoint explicitly verifies user ownership (IDOR defense).
+- **Request Correlation IDs**: `X-Request-ID` correlation middleware attached to all requests for observability.
+- **Standardized Error Handling**: Unified JSON error structures `{ success: false, error: { code, message } }` mapping status codes to clear error code constants (`VALIDATION_ERROR`, `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `RATE_LIMITED`, `INTERNAL_ERROR`), with internal stack trace sanitization in production.
 
 ---
 
-### 📊 Dashboard
-
-The dashboard provides an overview of the user's learning activity.
-
-It includes:
-
-* Today's study plan
-* Today's tasks
-* Current streak
-* Longest streak
-* Completion percentage
-* Study time
-* Recent activity
-
----
-
-### 📆 Study Calendar
-
-Visualize study activity across days.
-
-Each date can indicate:
-
-* 🟢 Completed (All tasks completed)
-* 🟡 Partially completed (Time target met)
-* 🌴 Rest Day (Explicitly scheduled rest day)
-* 🔴 Missed (Past days with no plan or marked incomplete/missed)
-* ⚪ No plan yet (For the current day only, not yet missed)
-* 🔵 Future
-
-Users can select a date to view its study plan and history.
-
----
-
-### 📝 Daily Reflection
-
-At the end of a study day, users can record:
-
-**What did I learn?**
-
-**What did I struggle with?**
-
-**What should I continue tomorrow?**
-
-This creates a personal learning journal over time.
-
----
-
-### 📈 Learning Analytics
-
-Track long-term learning progress through:
-
-* Weekly completion rate
-* Monthly completion rate
-* Total study hours
-* Average daily study time
-* Completed tasks
-* Missed tasks
-* Category-wise progress
-* Study trends
-* Current streak
-* Longest streak
-
----
-
-### 🏆 Achievements
-
-Users can unlock achievements based on their progress.
-
-Examples:
-
-* 🌱 First Study Day
-* 🔥 7 Day Streak
-* 🔥 30 Day Streak
-* 💪 50 Day Streak
-* 🏆 100 Day Streak
-* 📚 100 Tasks Completed
-* 📚 500 Tasks Completed
-* ⏱️ 100 Study Hours
-
----
-
-### 🔔 Study Reminders
-
-Users can configure reminders for:
-
-* Daily study
-* Evening completion
-* Streak at risk
-
-Notifications respect the user's timezone.
-
----
-
-### 🤖 AI Study Planner
-
-The planned AI module can generate personalized learning plans based on:
-
-* Learning goal
-* Target role
-* Current skill level
-* Available study time
-* Preferred study days
-* Target deadline
-
-The AI can generate:
-
-* Learning roadmap
-* Topics
-* Daily tasks
-* Estimated duration
-* Prerequisites
-* Milestones
-
-Generated plans require user confirmation before being added to the actual study schedule.
-
----
-
-### 🧠 Adaptive Study Planning
-
-If a user doesn't complete planned tasks, StudyStreak can recommend how to redistribute unfinished work.
-
-The system considers:
-
-* Available time
-* Task difficulty
-* Priority
-* Deadlines
-* Previous completion patterns
-
-The goal is to **adapt the plan without overwhelming the user.**
-
----
-
-# 🏗️ Architecture
-
-StudyStreak follows a modular full-stack architecture.
+## 🏗️ System Architecture
 
 ```text
-                    ┌─────────────────────┐
-                    │      Frontend       │
-                    │                     │
-                    │  Web Application    │
-                    └──────────┬──────────┘
-                               │
-                               │ REST API
-                               ▼
-                    ┌─────────────────────┐
-                    │       Backend       │
-                    │                     │
-                    │ Authentication      │
-                    │ Study Plans         │
-                    │ Tasks               │
-                    │ Streak Engine       │
-                    │ Analytics           │
-                    │ AI Services         │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │      Database       │
-                    │                     │
-                    │ Users               │
-                    │ Study Plans         │
-                    │ Tasks               │
-                    │ Reflections         │
-                    │ Achievements        │
-                    │ Statistics          │
-                    └─────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                       React SPA                             │
+│       Vite + TypeScript + Vanilla CSS + Context APIs        │
+└──────────────┬──────────────────────────────▲───────────────┘
+               │                              │
+               │ HTTPS + HTTP-Only Cookie     │ JSON Response
+               ▼                              │
+┌─────────────────────────────────────────────┴───────────────┐
+│                    Express API Backend                      │
+│                                                             │
+│  [ Helmet ] ──► [ Rate Limiter ] ──► [ Request ID ]         │
+│  [ Auth / JWT ] ──► [ Zod Validation ] ──► [ Controllers ]  │
+│  [ Services: Plan | Streak | Analytics | Achievements ]   │
+└──────────────┬──────────────────────────────────────────────┘
+               │
+               │ Prisma ORM (Parameterized Queries)
+               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    PostgreSQL 16 Database                   │
+│  Users | StudyPlans | StudyTasks | Reflections | Streaks    │
+│  Achievements | UserAchievements | Notifications | Prefs   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-# 🛠️ Tech Stack
+---
 
-We utilize TypeScript end-to-end to ensure type safety and high development velocity:
+## 🛠️ Tech Stack
 
-* **Frontend**: React (TypeScript), Vite, Vanilla CSS Modules
-* **Backend**: Node.js, Express (TypeScript), Zod for validation
-* **Database**: PostgreSQL with Prisma ORM
-* **Testing**: Vitest for unit & integration testing, Supertest for API routes
-* **Development**: ESLint, Prettier, Husky
-
-For a deep dive into the engineering rationale, refer to the [Architecture Specification](file:///d:/projects/Study-Streak/docs/architecture.md).
+- **Frontend**: React (TypeScript), Vite, Vanilla CSS, React Router DOM
+- **Backend**: Node.js, Express (TypeScript), Prisma ORM, Zod, Helmet, Express Rate Limit
+- **Database**: PostgreSQL 16
+- **Testing**: Vitest, Supertest, Testing Library React
+- **DevOps**: Docker, Docker Compose, GitHub Actions CI Workflow
 
 ---
 
-# 📂 Project Structure
+## 📂 Project Structure
 
 ```text
-study-streak/
-├── frontend/                 # React client SPA (Vite)
+Study-Streak/
+├── .github/workflows/ci.yml # GitHub Actions CI workflow
+├── backend/
+│   ├── prisma/              # Schema definition & seed script
 │   ├── src/
-│   │   ├── components/       # Shared UI components
-│   │   ├── features/         # Feature modules (auth, dashboard, analytics)
-│   │   ├── hooks/            # Global custom React hooks
-│   │   ├── services/         # API request wrapper and clients
-│   │   ├── types/            # TypeScript typing declarations
-│   │   └── App.tsx           # Router and app shell
-│   └── package.json          # Frontend packages
-│
-├── backend/                  # Express server
+│   │   ├── config/          # Environment validator & logger
+│   │   ├── middleware/      # Auth, rate limiter, request ID, error handler
+│   │   ├── modules/         # Feature modules (Auth, Plan, Task, Streak, Analytics, Achievement, Notification)
+│   │   ├── app.ts           # Express application setup
+│   │   └── server.ts        # Server entry point
+│   ├── Dockerfile           # Multi-stage Docker build
+│   └── package.json
+├── frontend/
 │   ├── src/
-│   │   ├── config/           # Database configurations and env
-│   │   ├── middleware/       # JWT auth, Zod validation, error handles
-│   │   ├── modules/          # Feature domains (controllers, services, routing)
-│   │   └── server.ts         # Listener entry point
-│   ├── prisma/               # Database layout and migrations
-│   └── package.json          # Backend packages
-│
-├── docs/                     # Architectural and API documentation
-│   └── architecture.md       # Tech stack and patterns spec
-│
-├── .env.example              # Sample environment configuration
-├── .gitignore                # Global git ignore configurations
-└── package.json              # Monorepo / Root packages setup
+│   │   ├── components/      # AppShell, NotificationCenter, UI primitives
+│   │   ├── features/        # Planner, Calendar, Reflections, Analytics, Achievements, Settings
+│   │   ├── services/        # Typed API service wrappers
+│   │   └── App.tsx          # Application routing
+│   └── package.json
+├── docker-compose.yml       # Production Docker orchestration
+├── .env.example             # Sample environment template
+└── package.json             # Root monorepo scripts
 ```
 
 ---
 
-# 🗄️ Core Data Model
+## 🔌 API Endpoints Catalog
 
-Refer to the [Prisma Schema Spec in Architecture Specification](file:///d:/projects/Study-Streak/docs/architecture.md#L45-L175) for the exact fields, relationships, and constraints. The core entities are:
+### Authentication
+- `POST /api/auth/register` — Register a new user
+- `POST /api/auth/login` — Login user & set HTTP-only cookie
+- `POST /api/auth/logout` — Logout user & clear cookie
+- `GET /api/auth/me` — Fetch authenticated user profile
 
-- **User**: Represents a student's profile, credentials, timezone, and preferences.
-- **StudyPlan**: Daily schedules, linked uniquely to a user and local date.
-- **StudyTask**: Granular learning tasks (category, status, duration, priority) under a plan.
-- **DailyReflection**: Journals capturing learning outcomes, struggles, and next actions.
-- **Streak**: Tracks current/longest streak and last active date.
-- **Achievement / UserAchievement**: Gamification badges unlocked by study performance.
-- **NotificationPreference**: Time and channel settings for study reminders.
+### Study Plans & Tasks
+- `POST /api/study-plans` — Create daily study plan
+- `GET /api/study-plans` — Get user study plans
+- `GET /api/study-plans/:id` — Get single study plan
+- `PUT /api/study-plans/:id` — Update study plan
+- `DELETE /api/study-plans/:id` — Delete study plan
+- `POST /api/study-plans/:planId/tasks` — Create task
+- `PUT /api/tasks/:id` — Update task
+- `DELETE /api/tasks/:id` — Delete task
+- `PUT /api/study-plans/:planId/tasks/reorder` — Reorder tasks
 
+### Streak & Analytics
+- `GET /api/streak` — Fetch current streak statistics
+- `POST /api/streak/recalculate` — Trigger recalculation
+- `GET /api/analytics/summary` — Overview analytics metrics
+- `GET /api/analytics/completion` — Completion trend analytics
+- `GET /api/analytics/categories` — Category breakdown analytics
+
+### Achievements & Notifications
+- `GET /api/achievements` — Get user achievements & progress
+- `GET /api/achievements/unlocked` — Get unlocked achievements
+- `GET /api/notifications` — Get user notifications
+- `GET /api/notifications/unread-count` — Get unread count
+- `PUT /api/notifications/:id/read` — Mark notification read
+- `PUT /api/notifications/read-all` — Mark all notifications read
+- `GET /api/notifications/preferences` — Get notification settings
+- `PUT /api/notifications/preferences` — Update notification settings
+
+### Health & Readiness
+- `GET /health` — Simple health status check (`{ status: "ok" }`)
+- `GET /ready` — Database connection readiness check (`{ status: "ok", database: "connected" }`)
 
 ---
 
-# 🔐 Authentication & Security
+## 🚀 Getting Started & Setup
 
-StudyStreak employs a secure, production-grade credentials authentication module:
+### Prerequisites
+- Node.js (v20+ recommended)
+- PostgreSQL 16 (or Docker)
 
-- **Password Safety**: Hashed using `bcrypt` (with 12 salt rounds) before persistence.
-- **Session Tokens**: JWT cookies signed with `JWT_SECRET`, stored in an HTTP-only, Secure (over HTTPS in production), and SameSite=Strict cookie named `token`. This fully defends against XSS and CSRF.
-- **Input Vetting**: Enforces strict payload validation rules on both backend and client inputs using `Zod` schemas.
-
-### Authentication Endpoints
-| HTTP Method | API Path | Request Body | Response Payload | Description | Protected |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | `{ name, email, password }` | `{ success: true, user }` | Create user profile and normalization | No |
-| `POST` | `/api/auth/login` | `{ email, password }` | `{ success: true, user }` | Verifies user and sets HTTP-only JWT | No |
-| `POST` | `/api/auth/logout` | None | `{ success: true }` | Clears cookie session token | Yes |
-| `GET` | `/api/auth/me` | None | `{ success: true, user }` | Returns active user profile | Yes |
-
-### Local Setup
-Ensure your local `.env` inside `backend/` has the required configuration variables:
-```env
-PORT=5000
-NODE_ENV=development
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/studystreak?schema=public"
-JWT_SECRET="generate_a_secure_random_string"
-```
-
-### Running Authentication Tests
-You can run automated auth integration and unit tests:
+### Installation
 ```bash
-# Run all tests across the monorepo workspaces
-npm run test
-```
-The backend integration tests use a fully mocked Prisma database client to verify API endpoint responses (success status codes, registration conflicts, incorrect credentials, and protected routes) without requiring a live PostgreSQL instance to be active.
+# Clone the repository
+git clone https://github.com/Chiranjeevi-N-29/Study-Streak.git
+cd Study-Streak
 
----
-
-# 🧪 Testing Strategy
-
-StudyStreak will use multiple levels of testing.
-
-### Unit Tests
-
-Important business logic such as:
-
-* Streak calculations
-* Completion calculations
-* Achievement conditions
-* Analytics calculations
-* Date handling
-
-### Integration Tests
-
-Test interactions between:
-
-```text
-API → Service → Database
-```
-
-### Frontend Tests
-
-Test:
-
-* Components
-* User interactions
-* Forms
-* Task completion
-* Dashboard states
-
----
-
-# 🌱 Development Roadmap
-
-## Phase 1 — Foundation
-
-* [x] Project setup
-* [x] Architecture
-* [x] Database
-* [x] Authentication
-* [x] Development tooling
-
-## Phase 2 — Core Study System
-
-* [x] Daily study plans
-* [x] Study tasks
-* [x] Task completion
-* [ ] Streak engine
-* [ ] Dashboard
-* [ ] Study calendar
-* [ ] Daily reflections
-
-## Phase 3 — Analytics & Gamification
-
-* [ ] Analytics
-* [ ] Progress charts
-* [ ] Achievements
-* [ ] Study statistics
-* [ ] Weekly reports
-
-## Phase 4 — Productivity
-
-* [ ] Study reminders
-* [ ] Streak protection
-* [ ] Productivity insights
-* [ ] Time tracking
-
-## Phase 5 — AI
-
-* [ ] AI study planner
-* [ ] AI-generated roadmap
-* [ ] Adaptive study planning
-* [ ] Personalized recommendations
-
-## Phase 6 — Production
-
-* [ ] Security audit
-* [ ] Performance optimization
-* [ ] Automated testing
-* [ ] CI/CD
-* [ ] Production deployment
-* [ ] Monitoring
-* [ ] Documentation
-
----
-
-# 🔄 Development Workflow
-
-StudyStreak is developed incrementally.
-
-Each feature follows:
-
-```text
-Plan
- ↓
-Design
- ↓
-Implement
- ↓
-Test
- ↓
-Review
- ↓
-Commit
- ↓
-Push
-```
-
-Git commits should represent meaningful changes.
-
-Example:
-
-```text
-feat: add authentication
-feat: add daily study plans
-feat: implement study tasks
-feat: implement streak engine
-feat: add study calendar
-feat: add analytics
-
-fix: prevent duplicate daily plans
-fix: correct streak calculation
-
-test: add streak edge case tests
-
-refactor: simplify study plan service
-```
-
----
-
-# 🚀 Getting Started
-
-## Prerequisites
-
-Install:
-
-* Node.js
-* npm
-* Git
-* Database required by the project
-
-Check versions:
-
-```bash
-node --version
-npm --version
-git --version
-```
-
----
-
-## Clone the Repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/study-streak.git
-cd study-streak
-```
-
----
-
-## Install Dependencies
-
-To install all dependencies for both the frontend and backend using npm workspaces, run this command in the repository root:
-
-```bash
+# Install all dependencies across workspaces
 npm install
 ```
 
----
-
-## Environment Variables
-
-Copy the `.env.example` file in the root directory to `.env` in the backend directory (or repository root) and customize it with your database url and secret values (do NOT commit `.env` to Git):
-
+### Environment Configuration
+Copy `.env.example` to `.env` in repository root:
 ```bash
 cp .env.example .env
 ```
 
----
+Customize environment keys:
+```env
+PORT=5000
+NODE_ENV=development
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/studystreak?schema=public
+JWT_SECRET=your_super_secret_jwt_key_here_change_in_production
+FRONTEND_URL=http://localhost:5173
+```
 
-## Run the Application
+### Running Local Database & Migrations
+```bash
+# Run Prisma migrations
+npx prisma migrate dev --schema=backend/prisma/schema.prisma
 
-All development commands are ran from the repository root:
+# Seed static achievements
+npm run db:seed -w backend
+```
 
-- **Start Dev Servers** (starts both Vite frontend and Express backend concurrently):
-  ```bash
-  npm run dev
-  ```
-- **Run Tests** (runs backend endpoint tests and frontend smoke tests via Vitest):
-  ```bash
-  npm run test
-  ```
-- **Typecheck code** (validates TypeScript types across the monorepo):
-  ```bash
-  npm run typecheck
-  ```
-- **Lint code** (runs ESLint checks on frontend and backend):
-  ```bash
-  npm run lint
-  ```
-- **Format code** (runs Prettier formatting across the monorepo):
-  ```bash
-  npm run format
-  ```
-- **Build production assets** (compiles Vite React SPA and Express TS outputs):
-  ```bash
-  npm run build
-  ```
+### Running Development Servers
+```bash
+# Start both backend and frontend concurrently
+npm run dev
+```
 
 ---
 
-# 📌 Current Status
+## 🧪 Quality Assurance & Testing
 
-**🚧 Under Active Development**
+Run the complete automated quality pipeline:
+```bash
+# Full quality check (Lint + Typecheck + Tests + Build)
+npm run check
+```
 
-StudyStreak is being developed incrementally, with each major feature tested and committed separately.
+Or individual checks:
+```bash
+# Run unit & integration tests (117 tests passing)
+npm test
+
+# Run TypeScript compilation checks
+npm run typecheck
+
+# Run ESLint checks
+npm run lint
+
+# Run production build
+npm run build
+```
 
 ---
 
-# 🎯 Project Goal
+## 🐳 Docker Production Deployment
 
-The ultimate goal of StudyStreak is to create a system that helps a learner answer three questions every day:
+To run the complete production stack (PostgreSQL + Express API Backend) using Docker Compose:
 
-> **What should I learn today?**
+```bash
+docker-compose up -d --build
+```
 
-> **Did I actually do it?**
-
-> **Am I becoming more consistent over time?**
-
-The application is designed not just to track tasks, but to help users **build the habit of learning consistently.**
-
----
-
-# 📜 License
-
-License information will be added before the first production release.
+Verify service readiness:
+```bash
+curl http://localhost:5000/ready
+```
 
 ---
 
 ## 👨‍💻 Author
-
-**Chiranjeevi N**
-
-Built as a full-stack software engineering project focused on:
-
-* Software development
-* System design
-* Backend engineering
-* Frontend engineering
-* Database design
-* Testing
-* AI integration
-* Production deployment
+**Chiranjeevi N** — Full-Stack Software Engineer
