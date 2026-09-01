@@ -241,3 +241,30 @@ export const analyticsApi = {
     });
   },
 };
+
+export interface AchievementItem {
+  id?: string;
+  code: string;
+  title: string;
+  description: string;
+  category: string;
+  conditionType: string;
+  threshold: number;
+  icon: string;
+  progress: number;
+  unlocked: boolean;
+  unlockedAt: string | null;
+}
+
+export const achievementApi = {
+  getAll: () => {
+    return request<{ success: boolean; achievements: AchievementItem[] }>('/achievements', {
+      method: 'GET',
+    });
+  },
+  getUnlocked: () => {
+    return request<{ success: boolean; achievements: AchievementItem[] }>('/achievements/unlocked', {
+      method: 'GET',
+    });
+  },
+};

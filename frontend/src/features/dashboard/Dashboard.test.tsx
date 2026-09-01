@@ -35,6 +35,12 @@ vi.mock('../../services/api.js', () => {
         lastActiveDate: '2026-08-30',
       }),
     },
+    achievementApi: {
+      getUnlocked: vi.fn().mockResolvedValue({
+        success: true,
+        achievements: [],
+      }),
+    },
   };
 });
 

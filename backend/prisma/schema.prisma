@@ -28,7 +28,9 @@ enum Status {
 enum ConditionType {
   STREAK
   TASKS_COMPLETED
-  TOTAL_HOURS
+  STUDY_TIME
+  REFLECTIONS
+  SUCCESSFUL_DAYS
 }
 
 model User {
@@ -114,6 +116,7 @@ model Achievement {
   code           String            @unique
   title          String
   description    String
+  category       String            @default("STREAK")
   icon           String
   conditionType  ConditionType
   conditionValue Int
@@ -126,6 +129,7 @@ model UserAchievement {
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   achievementId String
   achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  progress      Int         @default(0)
   unlockedAt    DateTime    @default(now())
 
   @@unique([userId, achievementId])

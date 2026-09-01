@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
-import { studyPlanApi, streakApi, studyTaskApi } from '../../services/api.js';
-import type { StudyPlan, StreakInfo, Status } from '../../services/api.js';
+import { studyPlanApi, streakApi, studyTaskApi, achievementApi } from '../../services/api.js';
+import type { StudyPlan, StreakInfo, Status, AchievementItem } from '../../services/api.js';
 
 import { DashboardHeader } from './components/DashboardHeader.js';
 import { StreakSummary } from './components/StreakSummary.js';
@@ -18,6 +18,7 @@ export const DashboardPage: React.FC = () => {
 
   const [plan, setPlan] = useState<StudyPlan | null>(null);
   const [streak, setStreak] = useState<StreakInfo | null>(null);
+  const [recentAchievement, setRecentAchievement] = useState<AchievementItem | null>(null);
   
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +28,10 @@ export const DashboardPage: React.FC = () => {
     try {
       setError(null);
       // Run API requests concurrently
-      const [planRes, streakRes] = await Promise.all([
+      const [planRes, streakRes, achRes] = await Promise.all([
         studyPlanApi.getToday(),
-        streakApi.get()
+        streakApi.get(),
+        achievementApi.getUnlocked().catch(() => ({ success: false, achievements: [] })),
       ]);
       
       setPlan(planRes.studyPlan);
@@ -39,6 +41,10 @@ export const DashboardPage: React.FC = () => {
         successfulStudyDays: streakRes.successfulStudyDays,
         lastActiveDate: streakRes.lastActiveDate,
       });
+
+      if (achRes.success && achRes.achievements.length > 0) {
+        setRecentAchievement(achRes.achievements[achRes.achievements.length - 1]);
+      }
     } catch (err) {
       console.error('DashboardPage concurrent fetch error:', err);
       setError('We couldn\'t load today\'s study dashboard data.');
@@ -148,14 +154,35 @@ export const DashboardPage: React.FC = () => {
         {/* Visual progress bar cards */}
         {plan && <DailyProgress plan={plan} />}
 
-        {/* Recent Activity placeholder card */}
+        {/* Recent Milestone card */}
         <div className="card-primitive" style={{ padding: '20px' }}>
           <h3 style={{ fontSize: '15px', marginTop: 0, marginBottom: '8px', color: 'var(--text-h)', fontWeight: 600 }}>
-            Recent Activity
+            🏆 Recent Milestone
           </h3>
-          <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-            Recent activity logs and completions history will be introduced in a future milestone.
-          </p>
+          {recentAchievement ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '28px' }}>{recentAchievement.icon}</span>
+              <div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-h)' }}>
+                  {recentAchievement.title}
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                  {recentAchievement.description}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+              Your next milestone is waiting. Keep studying to unlock achievements!
+            </p>
+          )}
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate('/app/achievements')}
+            style={{ width: '100%', marginTop: '12px', fontSize: '12px' }}
+          >
+            View All Achievements
+          </button>
         </div>
       </div>
     </div>
