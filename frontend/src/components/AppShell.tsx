@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext.js';
 import { useTheme } from '../context/ThemeContext.js';
+import { NotificationCenter } from './NotificationCenter.js';
 import './AppShell.css';
 import './UIPrimitives.css';
 
@@ -61,6 +62,9 @@ export const AppShell: React.FC = () => {
         </div>
         
         <div className="header-right">
+          {/* Notification Center */}
+          <NotificationCenter />
+
           {/* Theme Switcher Button */}
           <button 
             className="theme-toggle-btn"

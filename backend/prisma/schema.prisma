@@ -33,18 +33,27 @@ enum ConditionType {
   SUCCESSFUL_DAYS
 }
 
+enum NotificationType {
+  STUDY_REMINDER
+  PLAN_INCOMPLETE
+  REFLECTION_REMINDER
+  ACHIEVEMENT_UNLOCKED
+  STREAK_MILESTONE
+}
+
 model User {
-  id                    String                 @id @default(uuid())
-  email                 String                 @unique
-  passwordHash          String
-  name                  String
-  timezone              String                 @default("UTC")
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  studyPlans            StudyPlan[]
-  reflections           DailyReflection[]
-  achievements          UserAchievement[]
-  streak                Streak?
+  id                     String                 @id @default(uuid())
+  email                  String                 @unique
+  passwordHash           String
+  name                   String
+  timezone               String                 @default("UTC")
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  studyPlans             StudyPlan[]
+  reflections            DailyReflection[]
+  achievements           UserAchievement[]
+  notifications          Notification[]
+  streak                 Streak?
   notificationPreference NotificationPreference?
 
   @@index([email])
@@ -135,15 +144,33 @@ model UserAchievement {
   @@unique([userId, achievementId])
 }
 
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+  link      String?
+  eventKey  String?
+  createdAt DateTime         @default(now())
+
+  @@unique([userId, eventKey])
+  @@index([userId, read])
+  @@index([userId, createdAt])
+}
+
 model NotificationPreference {
-  id                     String   @id @default(uuid())
-  userId                 String   @unique
-  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dailyReminderEnabled   Boolean  @default(true)
-  dailyReminderTime      String   @default("09:00") // Local HH:MM
-  eveningReminderEnabled Boolean  @default(true)
-  eveningReminderTime    String   @default("21:00") // Local HH:MM
-  streakAtRiskEnabled    Boolean  @default(true)
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  id                              String   @id @default(uuid())
+  userId                          String   @unique
+  user                            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studyRemindersEnabled           Boolean  @default(true)
+  reflectionRemindersEnabled      Boolean  @default(true)
+  achievementNotificationsEnabled Boolean  @default(true)
+  streakNotificationsEnabled      Boolean  @default(true)
+  dailyReminderTime               String   @default("18:00") // Local HH:MM
+  timezone                        String   @default("UTC")
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime @updatedAt
 }

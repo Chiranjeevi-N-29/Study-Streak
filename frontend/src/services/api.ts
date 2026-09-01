@@ -268,3 +268,59 @@ export const achievementApi = {
     });
   },
 };
+
+export interface NotificationItem {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  link?: string | null;
+  createdAt: string;
+}
+
+export interface NotificationPreference {
+  id?: string;
+  userId?: string;
+  studyRemindersEnabled: boolean;
+  reflectionRemindersEnabled: boolean;
+  achievementNotificationsEnabled: boolean;
+  streakNotificationsEnabled: boolean;
+  dailyReminderTime: string;
+  timezone: string;
+}
+
+export const notificationApi = {
+  getAll: () => {
+    return request<{ success: boolean; notifications: NotificationItem[] }>('/notifications', {
+      method: 'GET',
+    });
+  },
+  getUnreadCount: () => {
+    return request<{ success: boolean; count: number }>('/notifications/unread-count', {
+      method: 'GET',
+    });
+  },
+  markAsRead: (id: string) => {
+    return request<{ success: boolean; notification: NotificationItem }>(`/notifications/${id}/read`, {
+      method: 'PUT',
+    });
+  },
+  markAllAsRead: () => {
+    return request<{ success: boolean; message: string }>('/notifications/read-all', {
+      method: 'PUT',
+    });
+  },
+  getPreferences: () => {
+    return request<{ success: boolean; preferences: NotificationPreference }>('/notifications/preferences', {
+      method: 'GET',
+    });
+  },
+  updatePreferences: (data: Partial<NotificationPreference>) => {
+    return request<{ success: boolean; preferences: NotificationPreference }>('/notifications/preferences', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+};

@@ -11,6 +11,7 @@ import { GuestRoute } from './components/GuestRoute.js';
 import { CalendarPage } from './features/calendar/CalendarPage.js';
 import { AnalyticsPage } from './features/analytics/AnalyticsPage.js';
 import { AchievementsPage } from './features/achievements/AchievementsPage.js';
+import { SettingsPage } from './features/settings/SettingsPage.js';
 import { PlaceholderPage } from './components/PlaceholderPage.js';
 import './App.css';
 
@@ -53,7 +54,7 @@ function App() {
               <Route path="/app/analytics" element={<AnalyticsPage />} />
               <Route path="/app/reflections" element={<PlaceholderPage title="Reflections" />} />
               <Route path="/app/achievements" element={<AchievementsPage />} />
-              <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Route>
 
             {/* Redirect all unmatched routes to home dashboard */}
