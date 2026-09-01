@@ -247,5 +247,28 @@ curl http://localhost:5000/ready
 
 ---
 
+## 🚀 Production Deployment & Launch
+
+For detailed step-by-step production deployment instructions, environment variables, hosting options, and database migration commands, refer to the [Production Deployment Specification](file:///d:/projects/Study-Streak/docs/deployment.md).
+
+### Quick Deployment Checklist
+1. **Environment Configuration**: Copy `.env.example` to your hosting provider settings (`DATABASE_URL`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_URL`, `VITE_API_URL`).
+2. **Safe Migration Execution**: Run non-destructive production migrations:
+   ```bash
+   npx prisma migrate deploy --schema=backend/prisma/schema.prisma
+   ```
+3. **Idempotent Data Seeding**: Seed static achievement definitions:
+   ```bash
+   npm run db:seed -w backend
+   ```
+4. **Health & Readiness Verification**:
+   ```bash
+   curl https://api.studystreak.app/health
+   curl https://api.studystreak.app/ready
+   ```
+
+---
+
 ## 👨‍💻 Author
 **Chiranjeevi N** — Full-Stack Software Engineer
+
