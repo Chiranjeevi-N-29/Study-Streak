@@ -8,6 +8,7 @@ import { DashboardPage } from './features/dashboard/DashboardPage.js';
 import { AppShell } from './components/AppShell.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
 import { GuestRoute } from './components/GuestRoute.js';
+import { CalendarPage } from './features/calendar/CalendarPage.js';
 import { PlaceholderPage } from './components/PlaceholderPage.js';
 import './App.css';
 
@@ -46,7 +47,7 @@ function App() {
               <Route path="/" element={<Navigate to="/app" replace />} />
               <Route path="/app" element={<DashboardPage />} />
               <Route path="/app/planner" element={<StudyPlanner />} />
-              <Route path="/app/calendar" element={<PlaceholderPage title="Calendar" />} />
+              <Route path="/app/calendar" element={<CalendarPage />} />
               <Route path="/app/analytics" element={<PlaceholderPage title="Analytics" />} />
               <Route path="/app/reflections" element={<PlaceholderPage title="Reflections" />} />
               <Route path="/app/achievements" element={<PlaceholderPage title="Achievements" />} />
