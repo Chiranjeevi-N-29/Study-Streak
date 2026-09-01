@@ -6,6 +6,7 @@ import authRoutes from './modules/auth/auth.routes.js';
 import studyPlanRoutes from './modules/study-plan/study-plan.routes.js';
 import studyTaskRoutes from './modules/study-task/study-task.routes.js';
 import streakRoutes from './modules/streak/streak.routes.js';
+import analyticsRoutes from './modules/analytics/analytics.routes.js';
 
 const app = express();
 
@@ -21,10 +22,11 @@ app.use(express.urlencoded({ extended: true }));
 // Auth Routes
 app.use('/api/auth', authRoutes);
 
-// Study Plan, Task, and Streak Routes
+// Study Plan, Task, Streak, and Analytics Routes
 app.use('/api/study-plans', studyPlanRoutes);
 app.use('/api/tasks', studyTaskRoutes);
 app.use('/api/streak', streakRoutes);
+app.use('/api', analyticsRoutes);
 
 // Health Check Endpoint
 app.get('/api/health', (req, res) => {

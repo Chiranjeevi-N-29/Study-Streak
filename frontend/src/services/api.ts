@@ -179,3 +179,65 @@ export const streakApi = {
     });
   },
 };
+
+export interface AnalyticsSummary {
+  range: '7d' | '30d' | '90d' | 'all';
+  kpis: {
+    currentStreak: number;
+    longestStreak: number;
+    successfulDays: number;
+    restDays: number;
+    missedDays: number;
+    totalStudyMinutes: number;
+    completedTasksCount: number;
+    plannedTasksCount: number;
+    completionRate: number;
+    avgStudyMinutesPerDay: number;
+    avgStudyMinutesPerSuccessfulDay: number;
+  };
+  dailyTimeSeries: Array<{
+    date: string;
+    dayOfWeek: string;
+    studyMinutes: number;
+    targetMinutes: number;
+    status: string;
+    tasksCompleted: number;
+    totalTasks: number;
+  }>;
+  weeklyBreakdown: Array<{
+    weekLabel: string;
+    studyMinutes: number;
+    tasksCompleted: number;
+    plannedTasks: number;
+    completionRate: number;
+  }>;
+  categoryBreakdown: Array<{
+    category: string;
+    studyMinutes: number;
+    taskCount: number;
+    completedCount: number;
+  }>;
+  priorityPerformance: Array<{
+    priority: string;
+    totalTasks: number;
+    completedTasks: number;
+    completionRate: number;
+  }>;
+  studyHabits: {
+    mostProductiveDayOfWeek: string | null;
+    topCategory: string | null;
+    avgDailyMinutes: number;
+  };
+  moodAnalytics: {
+    counts: Record<string, number>;
+    avgMinutesByMood: Record<string, number>;
+  };
+}
+
+export const analyticsApi = {
+  get: (range: string = '30d') => {
+    return request<{ success: boolean; analytics: AnalyticsSummary }>(`/analytics?range=${range}`, {
+      method: 'GET',
+    });
+  },
+};
