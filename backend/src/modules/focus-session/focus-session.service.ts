@@ -203,7 +203,7 @@ export const completeFocusSession = async (userId: string, sessionId: string) =>
           actualDuration: { increment: addedMinutes },
         },
       });
-      if (updatedTask.goalId) {
+      if (updatedTask && updatedTask.goalId) {
         await recalculateGoalProgress(updatedTask.goalId);
       }
     }

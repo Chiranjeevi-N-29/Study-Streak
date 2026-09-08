@@ -65,6 +65,12 @@ vi.mock('../../services/api.js', () => {
       get: vi.fn(),
       update: vi.fn(),
     },
+    goalApi: {
+      list: vi.fn().mockResolvedValue({
+        success: true,
+        goals: [],
+      }),
+    },
   };
 });
 
