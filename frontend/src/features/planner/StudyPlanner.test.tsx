@@ -37,6 +37,12 @@ vi.mock('../../services/api.js', () => {
         lastActiveDate: null,
       }),
     },
+    goalApi: {
+      list: vi.fn().mockResolvedValue({
+        success: true,
+        goals: [],
+      }),
+    },
   };
 });
 

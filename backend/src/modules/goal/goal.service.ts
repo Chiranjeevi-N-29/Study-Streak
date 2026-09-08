@@ -35,6 +35,7 @@ export const formatGoalResponse = (goal: any) => {
 };
 
 export const recalculateGoalProgress = async (goalId: string) => {
+  if (!prisma.studyGoal?.findUnique) return null;
   const goal = await prisma.studyGoal.findUnique({
     where: { id: goalId },
     include: {
