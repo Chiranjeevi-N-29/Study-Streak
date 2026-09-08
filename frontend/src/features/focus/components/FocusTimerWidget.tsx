@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { focusSessionApi, studyPlanApi } from '../../../services/api.js';
+import { focusSessionApi, studyPlanApi, preferencesApi } from '../../../services/api.js';
 import type { FocusSession, StudyTask } from '../../../services/api.js';
 import '../../../components/UIPrimitives.css';
 import './FocusTimerWidget.css';
@@ -19,6 +19,7 @@ export const FocusTimerWidget: React.FC<FocusTimerWidgetProps> = ({
   const [selectedTaskId, setSelectedTaskId] = useState<string>('');
   const [availableTasks, setAvailableTasks] = useState<StudyTask[]>(propsTasks || []);
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+  const [targetFocusMinutes, setTargetFocusMinutes] = useState<number>(25);
   
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
@@ -26,13 +27,14 @@ export const FocusTimerWidget: React.FC<FocusTimerWidgetProps> = ({
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch active session & today's tasks if not provided as props
+  // Fetch active session & today's tasks & user preferences
   const fetchActiveState = async () => {
     try {
       setError(null);
-      const [activeRes, planRes] = await Promise.all([
+      const [activeRes, planRes, prefRes] = await Promise.all([
         focusSessionApi.getActive(),
         propsTasks ? Promise.resolve(null) : studyPlanApi.getToday().catch(() => null),
+        preferencesApi.get().catch(() => null),
       ]);
 
       if (activeRes.success) {
@@ -43,6 +45,10 @@ export const FocusTimerWidget: React.FC<FocusTimerWidgetProps> = ({
         setAvailableTasks(planRes.studyPlan.tasks);
       } else if (propsTasks) {
         setAvailableTasks(propsTasks);
+      }
+
+      if (prefRes && prefRes.success && prefRes.preferences) {
+        setTargetFocusMinutes(prefRes.preferences.defaultFocusDurationMinutes);
       }
     } catch (err) {
       console.error('FocusTimerWidget sync error:', err);
@@ -241,10 +247,31 @@ export const FocusTimerWidget: React.FC<FocusTimerWidgetProps> = ({
             )}
           </div>
 
-          {/* Large Countdown/Elapsed Digits */}
+          {/* Large Countdown/Elapsed Digits with target preference */}
           <div className={`timer-digits ${activeSession.status === 'PAUSED' ? 'paused-pulse' : ''}`}>
             {formatTimeDisplay(elapsedSeconds)}
+            <span style={{ fontSize: '0.45em', opacity: 0.65, marginLeft: '6px' }}>
+              / {formatTimeDisplay(targetFocusMinutes * 60)}
+            </span>
           </div>
+
+          {elapsedSeconds >= targetFocusMinutes * 60 && (
+            <div
+              style={{
+                background: 'rgba(34, 197, 94, 0.15)',
+                color: '#22c55e',
+                padding: '8px 12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                fontWeight: 600,
+                marginBottom: '12px',
+                textAlign: 'center',
+              }}
+            >
+              Focus target reached 🎉
+            </div>
+          )}
+
 
           {/* Controls */}
           <div className="focus-actions-row">

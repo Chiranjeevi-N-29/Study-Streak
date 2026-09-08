@@ -44,8 +44,30 @@ vi.mock('../../services/api.js', () => {
         achievements: [],
       }),
     },
+    preferencesApi: {
+      get: vi.fn().mockResolvedValue({
+        success: true,
+        preferences: {
+          dailyStudyGoalMinutes: 60,
+          preferredStudyDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          preferredStudyStartTime: '09:00',
+          preferredStudyEndTime: '18:00',
+          defaultFocusDurationMinutes: 25,
+          defaultBreakDurationMinutes: 5,
+          longBreakDurationMinutes: 15,
+          autoStartBreak: false,
+          weekStartsOn: 'Monday',
+        },
+      }),
+      update: vi.fn(),
+    },
+    profileApi: {
+      get: vi.fn(),
+      update: vi.fn(),
+    },
   };
 });
+
 
 const renderTestComponent = (
   initialEntries: string[],

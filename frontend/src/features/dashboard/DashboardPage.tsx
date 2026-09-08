@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
-import { studyPlanApi, streakApi, studyTaskApi, achievementApi } from '../../services/api.js';
+import { studyPlanApi, streakApi, studyTaskApi, achievementApi, preferencesApi } from '../../services/api.js';
 import type { StudyPlan, StreakInfo, Status, AchievementItem } from '../../services/api.js';
 
 import { DashboardHeader } from './components/DashboardHeader.js';
@@ -20,6 +20,7 @@ export const DashboardPage: React.FC = () => {
   const [plan, setPlan] = useState<StudyPlan | null>(null);
   const [streak, setStreak] = useState<StreakInfo | null>(null);
   const [recentAchievement, setRecentAchievement] = useState<AchievementItem | null>(null);
+  const [dailyGoal, setDailyGoal] = useState<number | undefined>(undefined);
   
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,10 +30,11 @@ export const DashboardPage: React.FC = () => {
     try {
       setError(null);
       // Run API requests concurrently
-      const [planRes, streakRes, achRes] = await Promise.all([
+      const [planRes, streakRes, achRes, prefRes] = await Promise.all([
         studyPlanApi.getToday(),
         streakApi.get(),
         achievementApi.getUnlocked().catch(() => ({ success: false, achievements: [] })),
+        preferencesApi.get().catch(() => ({ success: false, preferences: undefined })),
       ]);
       
       setPlan(planRes.studyPlan);
@@ -42,6 +44,11 @@ export const DashboardPage: React.FC = () => {
         successfulStudyDays: streakRes.successfulStudyDays,
         lastActiveDate: streakRes.lastActiveDate,
       });
+
+      if (prefRes.success && prefRes.preferences) {
+        setDailyGoal(prefRes.preferences.dailyStudyGoalMinutes);
+      }
+
 
       if (achRes.success && achRes.achievements.length > 0) {
         setRecentAchievement(achRes.achievements[achRes.achievements.length - 1]);
@@ -156,7 +163,8 @@ export const DashboardPage: React.FC = () => {
         <StreakSummary streak={streak} />
 
         {/* Visual progress bar cards */}
-        {plan && <DailyProgress plan={plan} />}
+        <DailyProgress plan={plan} dailyStudyGoalMinutes={dailyGoal} />
+
 
         {/* Recent Milestone card */}
         <div className="card-primitive" style={{ padding: '20px' }}>

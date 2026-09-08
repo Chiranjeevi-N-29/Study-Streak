@@ -9,6 +9,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   error: string | null;
   setError: (err: string | null) => void;
 }
@@ -19,6 +20,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const refreshUser = async () => {
+    try {
+      const data = await authApi.me();
+      if (data.success && data.user) {
+        setUser(data.user);
+      }
+    } catch {
+      // Ignore if session check fails
+    }
+  };
 
   // Check for active session on load
   useEffect(() => {
@@ -89,11 +101,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, error, setError }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, error, setError }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

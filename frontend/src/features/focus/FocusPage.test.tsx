@@ -42,8 +42,21 @@ vi.mock('../../services/api.js', () => {
       complete: vi.fn(),
       cancel: vi.fn(),
     },
+    preferencesApi: {
+      get: vi.fn().mockResolvedValue({
+        success: true,
+        preferences: {
+          defaultFocusDurationMinutes: 25,
+          defaultBreakDurationMinutes: 5,
+          longBreakDurationMinutes: 15,
+          autoStartBreak: false,
+        },
+      }),
+      update: vi.fn(),
+    },
   };
 });
+
 
 const mockStats: api.FocusStats = {
   totalFocusSeconds: 3600,

@@ -15,8 +15,10 @@ import analyticsRoutes from './modules/analytics/analytics.routes.js';
 import achievementRoutes from './modules/achievement/achievement.routes.js';
 import notificationRoutes from './modules/notification/notification.routes.js';
 import focusSessionRoutes from './modules/focus-session/focus-session.routes.js';
+import profilePreferencesRoutes from './modules/profile-preferences/profile-preferences.routes.js';
 
 const app = express();
+
 
 // Security Headers
 app.use(
@@ -90,6 +92,7 @@ app.use('/api/streak', streakRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/focus-sessions', focusSessionRoutes);
+app.use('/api', profilePreferencesRoutes);
 app.use('/api', analyticsRoutes);
 
 // Health Check Endpoint

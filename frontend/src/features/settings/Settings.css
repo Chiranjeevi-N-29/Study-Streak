@@ -113,3 +113,29 @@
   font-weight: 600;
   color: #16a34a;
 }
+
+.day-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.day-pill-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--code-bg);
+  color: var(--text-h);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-pill-btn.selected {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+

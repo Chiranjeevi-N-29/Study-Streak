@@ -56,8 +56,10 @@ function App() {
               <Route path="/app/analytics" element={<AnalyticsPage />} />
               <Route path="/app/reflections" element={<PlaceholderPage title="Reflections" />} />
               <Route path="/app/achievements" element={<AchievementsPage />} />
+              <Route path="/app/profile" element={<SettingsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
+
 
             {/* Redirect all unmatched routes to home dashboard */}
             <Route path="*" element={<Navigate to="/app" replace />} />

@@ -418,3 +418,57 @@ export const focusSessionApi = {
   },
 };
 
+export interface UserProfile {
+  id: string;
+  email: string;
+  displayName: string;
+  timezone: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface UserPreferences {
+  id?: string;
+  userId?: string;
+  dailyStudyGoalMinutes: number;
+  preferredStudyDays: string[];
+  preferredStudyStartTime: string;
+  preferredStudyEndTime: string;
+  defaultFocusDurationMinutes: number;
+  defaultBreakDurationMinutes: number;
+  longBreakDurationMinutes: number;
+  autoStartBreak: boolean;
+  weekStartsOn: 'Monday' | 'Sunday';
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export const profileApi = {
+  get: () => {
+    return request<{ success: boolean; profile: UserProfile }>('/profile', {
+      method: 'GET',
+    });
+  },
+  update: (data: { displayName?: string; timezone?: string; avatarUrl?: string | null }) => {
+    return request<{ success: boolean; message: string; profile: UserProfile }>('/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+export const preferencesApi = {
+  get: () => {
+    return request<{ success: boolean; preferences: UserPreferences }>('/preferences', {
+      method: 'GET',
+    });
+  },
+  update: (data: Partial<UserPreferences>) => {
+    return request<{ success: boolean; message: string; preferences: UserPreferences }>('/preferences', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+

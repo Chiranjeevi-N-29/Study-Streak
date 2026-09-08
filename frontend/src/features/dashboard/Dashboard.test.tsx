@@ -41,6 +41,23 @@ vi.mock('../../services/api.js', () => {
         achievements: [],
       }),
     },
+    preferencesApi: {
+      get: vi.fn().mockResolvedValue({
+        success: true,
+        preferences: {
+          dailyStudyGoalMinutes: 60,
+          preferredStudyDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          preferredStudyStartTime: '09:00',
+          preferredStudyEndTime: '18:00',
+          defaultFocusDurationMinutes: 25,
+          defaultBreakDurationMinutes: 5,
+          longBreakDurationMinutes: 15,
+          autoStartBreak: false,
+          weekStartsOn: 'Monday',
+        },
+      }),
+      update: vi.fn(),
+    },
   };
 });
 
@@ -66,7 +83,22 @@ describe('Dashboard Page Component Suite', () => {
       successfulStudyDays: 15,
       lastActiveDate: '2026-08-30',
     });
+    vi.mocked(api.preferencesApi.get).mockResolvedValue({
+      success: true,
+      preferences: {
+        dailyStudyGoalMinutes: 60,
+        preferredStudyDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        preferredStudyStartTime: '09:00',
+        preferredStudyEndTime: '18:00',
+        defaultFocusDurationMinutes: 25,
+        defaultBreakDurationMinutes: 5,
+        longBreakDurationMinutes: 15,
+        autoStartBreak: false,
+        weekStartsOn: 'Monday',
+      },
+    });
   });
+
 
   describe('Adaptive Time-of-Day Greetings', () => {
     it('should display Good morning before 12:00', async () => {
@@ -159,8 +191,9 @@ describe('Dashboard Page Component Suite', () => {
       // Check progress details
       expect(screen.getByText('Task Completion')).toBeInTheDocument();
       expect(screen.getByText('0 of 1 tasks completed')).toBeInTheDocument(); // 0%
-      expect(screen.getByText('20 / 60 minutes logged')).toBeInTheDocument(); // 33%
+      expect(screen.getByText(/20 \/ 60 min logged/i)).toBeInTheDocument(); // 33%
     });
+
 
     it('should render calm rest day page if plan status is REST_DAY', async () => {
       const restPlan: api.StudyPlan = {

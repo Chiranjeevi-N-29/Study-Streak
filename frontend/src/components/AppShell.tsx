@@ -98,11 +98,21 @@ export const AppShell: React.FC = () => {
                   <p className="dropdown-user-tz">TZ: {user?.timezone}</p>
                 </div>
                 <hr className="dropdown-divider" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    navigate('/app/profile');
+                  }}
+                >
+                  👤 Profile & Preferences
+                </button>
                 <button className="dropdown-item" onClick={handleLogout}>
                   🚪 Log Out
                 </button>
               </div>
             )}
+
           </div>
         </div>
       </header>

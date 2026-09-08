@@ -63,6 +63,7 @@ model User {
   focusSessions          FocusSession[]
   streak                 Streak?
   notificationPreference NotificationPreference?
+  userPreferences        UserPreferences?
 
   @@index([email])
 }
@@ -203,5 +204,22 @@ model FocusSession {
   @@index([userId, startedAt])
   @@index([userId, status])
   @@index([taskId])
+}
+
+model UserPreferences {
+  id                          String   @id @default(uuid())
+  userId                      String   @unique
+  user                        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyStudyGoalMinutes       Int      @default(60)
+  preferredStudyDays          String[] @default(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
+  preferredStudyStartTime     String   @default("09:00")
+  preferredStudyEndTime       String   @default("18:00")
+  defaultFocusDurationMinutes Int      @default(25)
+  defaultBreakDurationMinutes Int      @default(5)
+  longBreakDurationMinutes    Int      @default(15)
+  autoStartBreak              Boolean  @default(false)
+  weekStartsOn                String   @default("Monday")
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
 }
 

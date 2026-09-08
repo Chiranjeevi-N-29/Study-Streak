@@ -5,16 +5,17 @@ import '../../../components/UIPrimitives.css';
 
 interface DailyProgressProps {
   plan: StudyPlan | null;
+  dailyStudyGoalMinutes?: number;
 }
 
-export const DailyProgress: React.FC<DailyProgressProps> = ({ plan }) => {
+export const DailyProgress: React.FC<DailyProgressProps> = ({ plan, dailyStudyGoalMinutes }) => {
   const tasks = plan?.tasks ?? [];
   const totalTasks = tasks.length;
   const completedTasksCount = tasks.filter((t) => t.status === 'COMPLETED').length;
   
   // Sum actual duration from all tasks
   const actualMinutes = tasks.reduce((sum, t) => sum + t.actualDuration, 0);
-  const targetMinutes = plan?.minimumStudyTarget ?? 0;
+  const targetMinutes = dailyStudyGoalMinutes ?? plan?.minimumStudyTarget ?? 60;
 
   const taskPercentage = totalTasks > 0 ? Math.round((completedTasksCount / totalTasks) * 100) : 0;
   const studyTimePercentage = targetMinutes > 0 ? Math.min(100, Math.round((actualMinutes / targetMinutes) * 100)) : 0;
@@ -39,19 +40,20 @@ export const DailyProgress: React.FC<DailyProgressProps> = ({ plan }) => {
         </p>
       </div>
 
-      {/* Study Time Progress */}
+      {/* Daily Study Goal Progress */}
       <div className="progress-widget">
         <div className="progress-widget-header">
-          <span className="progress-widget-label">Study Target Time</span>
+          <span className="progress-widget-label">Daily Study Goal</span>
           <span className="progress-widget-value">{studyTimePercentage}%</span>
         </div>
         <div className="progress-bar-track">
           <div className="progress-bar-fill" style={{ width: `${studyTimePercentage}%` }} />
         </div>
         <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0 }}>
-          {actualMinutes} / {targetMinutes} minutes logged
+          {actualMinutes} / {targetMinutes} min logged ({studyTimePercentage}% complete)
         </p>
       </div>
     </div>
   );
 };
+
