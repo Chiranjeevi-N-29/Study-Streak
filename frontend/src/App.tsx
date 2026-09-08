@@ -17,7 +17,9 @@ import { GoalsPage } from './features/goals/GoalsPage.js';
 import { GoalDetailPage } from './features/goals/GoalDetailPage.js';
 import { GroupsPage } from './features/groups/GroupsPage.js';
 import { GroupDetailPage } from './features/groups/GroupDetailPage.js';
+import { ReportsPage } from './features/reports/ReportsPage.js';
 import { PlaceholderPage } from './components/PlaceholderPage.js';
+
 import './App.css';
 
 function App() {
@@ -62,6 +64,8 @@ function App() {
               <Route path="/app/planner" element={<StudyPlanner />} />
               <Route path="/app/calendar" element={<CalendarPage />} />
               <Route path="/app/analytics" element={<AnalyticsPage />} />
+              <Route path="/app/reports" element={<ReportsPage />} />
+
               <Route path="/app/reflections" element={<PlaceholderPage title="Reflections" />} />
               <Route path="/app/achievements" element={<AchievementsPage />} />
               <Route path="/app/profile" element={<SettingsPage />} />

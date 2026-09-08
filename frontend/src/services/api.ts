@@ -900,5 +900,224 @@ export const groupsApi = {
 };
 
 
+// ─── Reports ──────────────────────────────────────────────────────────────────
 
+export type ReportRange = '7d' | '30d' | '90d' | 'all' | 'custom';
+export type ExportFormat = 'json' | 'csv';
+export type ExportDataset = 'tasks' | 'focus_sessions' | 'study_history' | 'goals' | 'all';
 
+export interface ReportDateRange {
+  startDate: string;
+  endDate: string;
+  numDays: number;
+  label: string;
+}
+
+export interface ReportOverview {
+  totalStudyMinutes: number;
+  avgDailyMinutes: number;
+  avgActiveDayMinutes: number;
+  totalTasksCompleted: number;
+  totalTasksPlanned: number;
+  taskCompletionRate: number;
+  successfulDays: number;
+  restDays: number;
+  missedDays: number;
+  dayCompletionRate: number;
+  totalFocusSessions: number;
+  totalFocusMinutes: number;
+  avgFocusSessionMinutes: number;
+}
+
+export interface ReportDailyPoint {
+  date: string;
+  dayOfWeek: string;
+  studyMinutes: number;
+  targetMinutes: number;
+  focusMinutes: number;
+  tasksCompleted: number;
+  totalTasks: number;
+  status: string;
+}
+
+export interface ReportWeeklyPoint {
+  weekLabel: string;
+  startDate: string;
+  studyMinutes: number;
+  focusMinutes: number;
+  tasksCompleted: number;
+  plannedTasks: number;
+  completionRate: number;
+  successfulDays: number;
+}
+
+export interface ReportCategoryStat {
+  category: string;
+  studyMinutes: number;
+  taskCount: number;
+  completedCount: number;
+  completionRate: number;
+  estimatedMinutes: number;
+  actualVsEstimatedRatio: number;
+}
+
+export interface ReportPriorityStat {
+  priority: string;
+  totalTasks: number;
+  completedTasks: number;
+  completionRate: number;
+  totalEstimatedMinutes: number;
+  totalActualMinutes: number;
+}
+
+export interface ReportGoalItem {
+  id: string;
+  title: string;
+  category: string | null;
+  status: string;
+  progressType: string;
+  targetValue: number | null;
+  currentValue: number;
+  progressPercentage: number;
+  targetDate: string | null;
+  completedAt: string | null;
+  daysUntilDeadline: number | null;
+  isOverdue: boolean;
+  milestoneTotal: number;
+  milestoneCompleted: number;
+}
+
+export interface ReportStreakData {
+  currentStreak: number;
+  longestStreak: number;
+  successfulStudyDays: number;
+  consistencyScore: number;
+  longestGap: number;
+  streakBreaks: number;
+  mostProductiveDayOfWeek: string | null;
+  leastProductiveDayOfWeek: string | null;
+  dayOfWeekBreakdown: Array<{
+    day: string;
+    avgMinutes: number;
+    successCount: number;
+    totalDays: number;
+  }>;
+}
+
+export interface ReportFocusSessionData {
+  totalSessions: number;
+  completedSessions: number;
+  cancelledSessions: number;
+  totalFocusMinutes: number;
+  avgSessionMinutes: number;
+  longestSessionMinutes: number;
+  taskLinkedSessions: number;
+  standaloneSessionsSessions: number;
+  sessionsByDay: Array<{ date: string; sessionCount: number; totalMinutes: number }>;
+}
+
+export interface ReportInsight {
+  type: 'positive' | 'warning' | 'neutral' | 'info';
+  title: string;
+  body: string;
+  metric?: string | number;
+}
+
+export interface PlannedVsActualPoint {
+  weekLabel: string;
+  plannedMinutes: number;
+  actualMinutes: number;
+  variance: number;
+  variancePct: number;
+}
+
+export interface ReportData {
+  range: string;
+  dateRange: ReportDateRange;
+  overview: ReportOverview;
+  dailyTimeSeries: ReportDailyPoint[];
+  weeklyBreakdown: ReportWeeklyPoint[];
+  categoryStats: ReportCategoryStat[];
+  priorityStats: ReportPriorityStat[];
+  goalReport: ReportGoalItem[];
+  streakReport: ReportStreakData;
+  focusSessionReport: ReportFocusSessionData;
+  plannedVsActual: PlannedVsActualPoint[];
+  insights: ReportInsight[];
+  moodAnalytics: {
+    counts: Record<string, number>;
+    avgMinutesByMood: Record<string, number>;
+  };
+}
+
+export const reportsApi = {
+  get: (params: {
+    range?: ReportRange;
+    startDate?: string;
+    endDate?: string;
+  } = {}) => {
+    const query = new URLSearchParams();
+    if (params.range) query.append('range', params.range);
+    if (params.startDate) query.append('startDate', params.startDate);
+    if (params.endDate) query.append('endDate', params.endDate);
+    const qs = query.toString();
+    return request<{ success: boolean; report: ReportData }>(`/reports${qs ? `?${qs}` : ''}`, {
+      method: 'GET',
+    });
+  },
+
+  // Returns a blob URL suitable for triggering a file download
+  getExportUrl: (params: {
+    format: ExportFormat;
+    dataset: ExportDataset;
+    range?: ReportRange;
+    startDate?: string;
+    endDate?: string;
+  }): string => {
+    const query = new URLSearchParams();
+    query.append('format', params.format);
+    query.append('dataset', params.dataset);
+    if (params.range) query.append('range', params.range);
+    if (params.startDate) query.append('startDate', params.startDate);
+    if (params.endDate) query.append('endDate', params.endDate);
+    return `${API_BASE}/reports/export?${query.toString()}`;
+  },
+
+  // Trigger an authenticated download by fetching as blob
+  downloadExport: async (params: {
+    format: ExportFormat;
+    dataset: ExportDataset;
+    range?: ReportRange;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<void> => {
+    const query = new URLSearchParams();
+    query.append('format', params.format);
+    query.append('dataset', params.dataset);
+    if (params.range) query.append('range', params.range);
+    if (params.startDate) query.append('startDate', params.startDate);
+    if (params.endDate) query.append('endDate', params.endDate);
+
+    const url = `${API_BASE}/reports/export?${query.toString()}`;
+    const response = await fetch(url, { method: 'GET', credentials: 'include' });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error((data as { error?: string }).error || 'Export failed');
+    }
+
+    const disposition = response.headers.get('Content-Disposition') || '';
+    const filenameMatch = disposition.match(/filename="([^"]+)"/);
+    const filename = filenameMatch ? filenameMatch[1] : `studystreak-export.${params.format}`;
+
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
+  },
+};

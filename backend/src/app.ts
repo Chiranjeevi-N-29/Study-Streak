@@ -19,6 +19,8 @@ import profilePreferencesRoutes from './modules/profile-preferences/profile-pref
 import goalRoutes from './modules/goal/goal.routes.js';
 import plannerRoutes from './modules/planner/planner.routes.js';
 import groupRoutes from './modules/study-group/study-group.routes.js';
+import reportsRoutes from './modules/reports/reports.routes.js';
+
 
 const app = express();
 
@@ -100,6 +102,8 @@ app.use('/api/planner', plannerRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api', profilePreferencesRoutes);
 app.use('/api', analyticsRoutes);
+app.use('/api', reportsRoutes);
+
 
 // Health Check Endpoint
 app.get('/health', (req, res) => {
