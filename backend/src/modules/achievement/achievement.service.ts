@@ -79,12 +79,14 @@ export const evaluateUserAchievements = async (userId: string) => {
   });
 
   // Count completed study goals
-  const completedGoalsCount = await prisma.studyGoal.count({
-    where: {
-      userId,
-      status: 'COMPLETED',
-    },
-  });
+  const completedGoalsCount = prisma.studyGoal?.count
+    ? await prisma.studyGoal.count({
+        where: {
+          userId,
+          status: 'COMPLETED',
+        },
+      })
+    : 0;
 
   // Map metric values by conditionType
   const metricValues: Record<string, number> = {
