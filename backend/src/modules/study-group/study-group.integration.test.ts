@@ -72,7 +72,6 @@ describe('Study Groups API Endpoints', () => {
   };
 
   const tokenOwner = signToken({ userId: testUserOwner.id });
-  const tokenMember = signToken({ userId: testUserMember.id });
   const tokenStranger = signToken({ userId: testUserNonMember.id });
 
   beforeEach(() => {

@@ -678,7 +678,7 @@ function generateInsights(params: {
   focusSessionReport: FocusSessionReport;
 }): StudyInsight[] {
   const insights: StudyInsight[] = [];
-  const { overview, streakReport, categoryStats, priorityStats, goalReport, dailyTimeSeries, focusSessionReport } = params;
+  const { overview, streakReport, categoryStats, priorityStats, goalReport, focusSessionReport } = params;
 
   // Consistency rating
   if (streakReport.consistencyScore >= 80) {

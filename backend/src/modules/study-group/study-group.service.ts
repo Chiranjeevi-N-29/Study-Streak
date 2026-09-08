@@ -306,7 +306,9 @@ export const joinByInviteCode = async (userId: string, inviteCode: string) => {
       link: `/app/groups/${group.id}`,
       eventKey: `group_joined_${group.id}_${userId}`,
     });
-  } catch (_) {}
+  } catch (_) {
+    // ignore notification error
+  }
 
   // Notify owner/admins about new member
   try {
@@ -327,7 +329,9 @@ export const joinByInviteCode = async (userId: string, inviteCode: string) => {
         eventKey: `group_member_joined_${group.id}_${userId}_${admin.userId}`,
       });
     }
-  } catch (_) {}
+  } catch (_) {
+    // ignore notification error
+  }
 
   return { membership, group };
 };
@@ -512,7 +516,9 @@ export const recalculateGroupGoalProgress = async (groupGoalId: string) => {
           eventKey: `group_goal_completed_${groupGoalId}_${m.userId}`,
         });
       }
-    } catch (_) {}
+    } catch (_) {
+      // ignore notification error
+    }
   }
 
   return {
@@ -574,7 +580,7 @@ export const recalculateGroupStreak = async (groupId: string) => {
 
   let currentStreak = 0;
   // Streak counts today and backwards consecutively
-  let checkDate = activeDates.has(today) ? today : activeDates.has(yesterday) ? yesterday : null;
+  const checkDate = activeDates.has(today) ? today : activeDates.has(yesterday) ? yesterday : null;
 
   if (checkDate) {
     let cur = checkDate;

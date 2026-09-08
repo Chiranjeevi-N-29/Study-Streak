@@ -1,303 +1,290 @@
 # 🔥 StudyStreak
 
-> **Plan your learning. Build your streak. Become consistent.**
+> **Plan your learning. Build your streak. Master consistency.**
 
-StudyStreak is a production-hardened, full-stack study planning and accountability application designed to help students and developers **plan what they need to learn every day, track task completion, maintain study streaks, record daily reflections, unlock achievements, and understand their learning progress over time.**
-
-The core philosophy is:
-
-**PLAN → STUDY → COMPLETE → REFLECT → ANALYZE → IMPROVE**
+StudyStreak is a full-stack, production-grade study planning, focus tracking, and accountability application designed to help learners convert ambitious study goals into daily actionable habits, maintain deterministic study streaks, collaborate in private accountability groups, and analyze long-term learning performance over time.
 
 ---
 
-## 🚀 Features
+## 📋 Overview
 
-### 📅 Daily Study Planning & Tasks
-- Create and organize study plans for any date.
-- Granular task management: categories, priorities (`LOW`, `MEDIUM`, `HIGH`), estimated vs actual duration, task ordering, and status tracking (`TODO`, `IN_PROGRESS`, `COMPLETED`, `PARTIALLY_COMPLETED`, `NOT_COMPLETED`, `REST_DAY`).
+Learning complex technical subjects requires consistency over intensity. Most productivity apps either lack dedicated study-focused workflow engines or rely on invasive social feeds.
 
-### 🔥 Deterministic Streak Engine
+StudyStreak solves this by combining:
+1. **Intelligent Workload Planning**: Deterministic weekly schedule recommendation engine based on daily capacity and task priorities.
+2. **Deterministic Streak Engine**: Explicit business logic handling study completion, rest days, timezone boundaries, and backfilled missed days.
+3. **Persistent Focus Tracking**: Server-authoritative focus sessions with pause/resume support, automatic task progress sync, and target focus time tracking.
+4. **Privacy-First Accountability Groups**: Small private groups (2–20 members) focused strictly on shared goal progress, leaderboards, and group streaks — zero social media distraction.
+5. **Advanced Analytics & Reports**: Multi-range trend reports (`7d`, `30d`, `90d`, `all`), automated deterministic insights, and authenticated JSON/CSV data export.
+
+---
+
+## ✨ Key Features
+
+### 🔐 1. Authentication & Security
+- Secure registration and login with bcrypt password hashing.
+- HTTP-only, `SameSite=Strict` JWT authentication cookies preventing XSS and CSRF token theft.
+- Role-based authorization and strict user data isolation (IDOR protection on all endpoints).
+
+### 📅 2. Daily Study Planning & Task Management
+- Daily study plan creation for any date with automated progress status (`TODO`, `IN_PROGRESS`, `COMPLETED`, `PARTIALLY_COMPLETED`, `NOT_COMPLETED`, `REST_DAY`).
+- Granular task details: title, category, priority (`LOW`, `MEDIUM`, `HIGH`), estimated vs. actual duration, linked long-term goal, and drag-free reordering.
+
+### 🔥 3. Deterministic Streak Engine
 - Automatic calculation of current streak, longest streak, and last active study date.
-- Robust business rules: `COMPLETED` and `PARTIALLY_COMPLETED` plans qualify as successful study days. `REST_DAY` bridges consecutive study days without breaking streaks. Past unfulfilled days automatically fall back to `MISSED`.
+- Business rules: `COMPLETED` and `PARTIALLY_COMPLETED` plans qualify as successful study days; `REST_DAY` preserves consecutive streaks without penalty; unfulfilled past days evaluate to `MISSED`.
 
-### 📆 Study Calendar & Historical View
+### ⏱️ 4. Persistent Focus Sessions
+- Live Pomodoro / custom study timer with `START`, `PAUSE`, `RESUME`, `CANCEL`, and `COMPLETE` actions.
+- Server-authoritative timing calculating net active duration excluding paused intervals.
+- Automatic completion integration: updates task `actualDuration`, plan status, goal focus minutes, group goal contributions, user achievements, and study streaks.
+
+### 📆 5. Study Calendar & History
 - Visual month-grid calendar mapping daily study status (Completed 🟢, Partial 🟡, Rest Day 🌴, Missed 🔴, Future 🔵).
-- Allows users to inspect any past study day's plan and task breakdown.
+- Inspect past study plans, modify task outcomes retroactively, or toggle rest days.
 
-### 📝 Daily Reflections & Learning Journal
-- Capture end-of-day reflections answering: *What did I learn? What did I struggle with? What should I improve tomorrow?*
+### 🎯 6. Long-Term Study Goals
+- Define long-term learning objectives with target hours, target completion dates, categories, and color tags.
+- Direct linking between daily tasks, focus sessions, and long-term goal progress bars.
 
-### 📈 Learning Analytics & Progress Intelligence
-- Visual progress charts: weekly/monthly completion rates, total study duration, daily average study time, category breakdowns, and streak trends.
+### 📚 7. Intelligent Study Planner & Schedule Builder
+- Visual 7-day weekly planning grid displaying daily scheduled workload and capacity bars.
+- Rule-based, explainable recommendation dialog suggesting optimal study days for unassigned tasks based on capacity and priority.
+- Workload capacity meter showing real-time fill level (green → amber → red).
 
-### 🏆 Achievements & Gamification
-- Predefined achievement milestones across streaks, completed tasks, study hours, daily reflections, and consistent study days.
-- Idempotent evaluation engine preventing duplicate unlocks.
+### 👥 8. Study Groups & Accountability
+- Small private study groups (2–20 members) created or joined via cryptographically secure 10-character invite codes.
+- Fine-grained membership roles (`OWNER`, `ADMIN`, `MEMBER`) supporting owner transfer, member management, and goal management.
+- Explicit focus session opt-in for group goals; individual tasks, notes, and private reflections remain 100% private.
+- Group streak engine (incremented when at least one member contributes focus time to a group goal on a calendar date) and 7-day focus minutes leaderboard.
 
-### 🔔 Smart Notifications & Study Reminders
-- Timezone-aware study and reflection reminders matching users' local times (`Asia/Kolkata`, `America/New_York`, `UTC`, etc.).
-- Notifications center in application header with unread badge count, dropdown drawer, and opt-in browser notifications.
+### 📊 9. Advanced Reports & Data Export
+- Comprehensive learning report dashboard supporting preset (`7d`, `30d`, `90d`, `All Time`) and custom date ranges.
+- Breakdown cards: Study Time Trends, Category Distribution, Task Performance by Priority/Tag, Goal Progress, Plan Performance, and Automated Rule-Based Insights.
+- Authenticated dataset exports (`Tasks`, `Focus Sessions`, `Study History`, `Study Goals`, `Full Backup`) in `JSON` or `CSV` format with sensitive field sanitization.
 
+### 💭 10. Reflections & Learning Journal
+- End-of-day reflection entries tracking key takeaways, difficulties encountered, and improvement goals for tomorrow.
 
-### 📱 Progressive Web App (PWA) & Offline Capabilities
-- **Installable Desktop & Mobile App**: Web App Manifest with standalone display mode, 192x192 / 512x512 maskable icons, and native install invitation prompt.
-- **Production Service Worker (`sw.js`)**: Static asset cache-first strategy, automatic cache versioning cleanup, and navigation fallback for offline SPA routing (`/app`, `/app/focus`, `/app/planner`, etc.).
-- **Online/Offline Status Banner**: Real-time non-intrusive status toast indicating offline state and automatic recovery notification when connection returns.
-- **Strict Data Isolation**: Authenticated `/api/*` endpoints strictly bypass service worker caching to prevent multi-tenant data leaks. Runtime caches are explicitly purged on logout.
+### 🏆 11. Achievements & Gamification
+- Dynamic, idempotent achievement evaluation engine awarding badges for streak milestones, study hour totals, completed tasks, and reflection consistency.
 
-### 📅 Study Planner & Intelligent Schedule Builder
-- **Weekly Planning Grid**: Visual 7-day grid showing each day's scheduled workload, capacity bar, and task distribution across the current week.
-- **Deterministic Schedule Recommendations**: Algorithm-driven session suggestions scored by remaining daily capacity (`dailyStudyGoalMinutes`), preferred study days, and task priority — no LLM, fully explainable and testable.
-- **Workload Capacity Meter**: Per-day capacity visualization with colour-coded fill (green → amber → red) based on estimated vs. available study time.
-- **Goal-linked Tasks**: Tasks can be associated with long-term goals; goal label shown on every task card in the planner.
-- **Task Reordering**: Up/down reorder controls for precise prioritization within a day's plan.
-- **Smart Recommendation Dialog**: Side-panel showing AI-free, rule-based task scheduling suggestions across the week — highlights overloaded days and surfaces unscheduled high-priority items.
-- **Dashboard Weekly Widget**: Compact `PlannerWeeklyWidget` on the daily dashboard giving an at-a-glance view of the week's study workload without navigating away.
-- **Filter & Search**: Filter tasks by priority or linked goal directly within the planner view.
+### 🔔 12. Smart Notifications & Reminders
+- Timezone-aware notification engine delivering daily study reminders, streak warning alerts, achievement unlocked toasts, and group goal milestone notifications.
 
-
-
-### 👥 Study Groups & Accountability
-- **Small Private Groups**: Create small study groups (2–20 members) or join via permanent 10-character cryptographically secure invite codes.
-- **Role-Based Membership**: Fine-grained permissions (`OWNER`, `ADMIN`, `MEMBER`) allowing member promotion, demotion, removal, and transfer of ownership.
-- **Shared Group Goals**: Collaborative study targets (e.g. "Complete 50 Hours of DSA Practice") with aggregate progress tracking.
-- **Explicit Focus Time Opt-in**: Users choose when to link a completed focus session to a group goal — private focus time, study tasks, and reflections remain 100% private and are never exposed.
-- **Group Streak Engine**: Independent UTC-based group streak engine incrementing when at least one member contributes focus time to a group goal on a calendar date.
-- **7-Day Member Leaderboard**: Aggregate focus minutes per member (names + minutes only, zero private task details disclosed).
-- **In-App Group Notifications**: System notifications triggered on group joining, new member arrival, and group goal milestone achievements.
-- **Dashboard Group Widget**: Compact `GroupDashboardWidget` on the main dashboard showing active groups, goal progress, and group streak.
-
-### 🛡️ Production Hardening & Security
-- **Startup Validation**: Environment variables validated at startup using Zod (`DATABASE_URL`, `JWT_SECRET`, `NODE_ENV`, `FRONTEND_URL`).
-- **Security Headers**: `helmet` integration enforcing frameguard, X-Content-Type-Options, HSTS, and Referrer-Policy.
-- **Rate Limiting**: Protection against brute-force login/registration attempts (10 req / 15 mins) and general API protection (200 req / 15 mins).
-- **Session Security**: HTTP-only, SameSite=Strict JWT authentication cookies preventing XSS/CSRF token theft.
-- **Strict Authorization**: Every resource endpoint explicitly verifies user ownership (IDOR defense).
-- **Request Correlation IDs**: `X-Request-ID` correlation middleware attached to all requests for observability.
-- **Standardized Error Handling**: Unified JSON error structures `{ success: false, error: { code, message } }` mapping status codes to clear error code constants (`VALIDATION_ERROR`, `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `RATE_LIMITED`, `INTERNAL_ERROR`), with internal stack trace sanitization in production.
+### 📱 13. PWA & Offline Support
+- Installable Desktop & Mobile Progressive Web App with Web App Manifest and custom icons.
+- Production Service Worker (`sw.js`) implementing static asset caching, offline fallback routing for SPA navigation, and authenticated `/api/*` cache isolation.
 
 ---
 
 ## 🏗️ System Architecture
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│                       React SPA                             │
-│       Vite + TypeScript + Vanilla CSS + Context APIs        │
-└──────────────┬──────────────────────────────▲───────────────┘
-               │                              │
-               │ HTTPS + HTTP-Only Cookie     │ JSON Response
-               ▼                              │
-┌─────────────────────────────────────────────┴───────────────┐
-│                    Express API Backend                      │
-│                                                             │
-│  [ Helmet ] ──► [ Rate Limiter ] ──► [ Request ID ]         │
-│  [ Auth / JWT ] ──► [ Zod Validation ] ──► [ Controllers ]  │
-│  [ Services: Plan | Streak | Analytics | Achievements ]   │
-└──────────────┬──────────────────────────────────────────────┘
-               │
-               │ Prisma ORM (Parameterized Queries)
-               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    PostgreSQL 16 Database                   │
-│  Users | StudyPlans | StudyTasks | Reflections | Streaks    │
-│  Achievements | UserAchievements | Notifications | Prefs   │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           React 18 SPA                                  │
+│       Vite + TypeScript + Vanilla CSS + Context API + Service Worker     │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     │ HTTPS / HTTP-Only Cookies
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      Express API Backend (Node.js)                      │
+│                                                                         │
+│  [ Helmet ] ──► [ Rate Limiter ] ──► [ Request ID ] ──► [ Auth Guard ]  │
+│  [ Zod Validation ] ──► [ Controller Layer ] ──► [ Business Services ] │
+│  (Auth | Plan | Task | Streak | Focus | Group | Report | Export | PWA)  │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     │ Prisma ORM (Parameterized Queries)
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       PostgreSQL 16 Database                            │
+│  Users | Profiles | StudyPlans | StudyTasks | FocusSessions | Streaks   │
+│  StudyGoals | StudyGroups | GroupMembers | GroupGoals | Achievements   │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React (TypeScript), Vite, Vanilla CSS, React Router DOM
-- **Backend**: Node.js, Express (TypeScript), Prisma ORM, Zod, Helmet, Express Rate Limit
-- **Database**: PostgreSQL 16
-- **Testing**: Vitest, Supertest, Testing Library React
-- **DevOps**: Docker, Docker Compose, GitHub Actions CI Workflow
+| Layer | Technologies Used |
+| :--- | :--- |
+| **Frontend** | React 18, TypeScript, Vite, React Router DOM v6, Vanilla CSS (CSS Variables, Flexbox/Grid), Service Worker PWA |
+| **Backend** | Node.js, Express, TypeScript, Prisma ORM, Zod, Bcrypt, JsonWebToken, Helmet, Express Rate Limit |
+| **Database** | PostgreSQL 16 |
+| **Testing** | Vitest, Supertest, React Testing Library, jsdom |
+| **Containerization & CI** | Docker, Docker Compose, Nginx Alpine, GitHub Actions CI |
 
 ---
 
-## 📂 Project Structure
+## 🧪 Automated Testing & Verification
 
-```text
-Study-Streak/
-├── .github/workflows/ci.yml # GitHub Actions CI workflow
-├── backend/
-│   ├── prisma/              # Schema definition & seed script
-│   ├── src/
-│   │   ├── config/          # Environment validator & logger
-│   │   ├── middleware/      # Auth, rate limiter, request ID, error handler
-│   │   ├── modules/         # Feature modules (Auth, Plan, Task, Streak, Analytics, Achievement, Notification)
-│   │   ├── app.ts           # Express application setup
-│   │   └── server.ts        # Server entry point
-│   ├── Dockerfile           # Multi-stage Docker build
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── components/      # AppShell, NotificationCenter, UI primitives
-│   │   ├── features/        # Planner, Calendar, Reflections, Analytics, Achievements, Settings
-│   │   ├── services/        # Typed API service wrappers
-│   │   └── App.tsx          # Application routing
-│   └── package.json
-├── docker-compose.yml       # Production Docker orchestration
-├── .env.example             # Sample environment template
-└── package.json             # Root monorepo scripts
-```
+StudyStreak includes comprehensive backend and frontend test suites built with **Vitest**:
 
----
-
-## 🔌 API Endpoints Catalog
-
-### Authentication
-- `POST /api/auth/register` — Register a new user
-- `POST /api/auth/login` — Login user & set HTTP-only cookie
-- `POST /api/auth/logout` — Logout user & clear cookie
-- `GET /api/auth/me` — Fetch authenticated user profile
-
-### Study Plans & Tasks
-- `POST /api/study-plans` — Create daily study plan
-- `GET /api/study-plans` — Get user study plans
-- `GET /api/study-plans/:id` — Get single study plan
-- `PUT /api/study-plans/:id` — Update study plan
-- `DELETE /api/study-plans/:id` — Delete study plan
-- `POST /api/study-plans/:planId/tasks` — Create task
-- `PUT /api/tasks/:id` — Update task
-- `DELETE /api/tasks/:id` — Delete task
-- `PUT /api/study-plans/:planId/tasks/reorder` — Reorder tasks
-
-### Streak & Analytics
-- `GET /api/streak` — Fetch current streak statistics
-- `POST /api/streak/recalculate` — Trigger recalculation
-- `GET /api/analytics/summary` — Overview analytics metrics
-- `GET /api/analytics/completion` — Completion trend analytics
-- `GET /api/analytics/categories` — Category breakdown analytics
-
-### Achievements & Notifications
-- `GET /api/achievements` — Get user achievements & progress
-- `GET /api/achievements/unlocked` — Get unlocked achievements
-- `GET /api/notifications` — Get user notifications
-- `GET /api/notifications/unread-count` — Get unread count
-- `PUT /api/notifications/:id/read` — Mark notification read
-- `PUT /api/notifications/read-all` — Mark all notifications read
-- `GET /api/notifications/preferences` — Get notification settings
-- `PUT /api/notifications/preferences` — Update notification settings
-
-### Health & Readiness
-- `GET /health` — Simple health status check (`{ status: "ok" }`)
-- `GET /ready` — Database connection readiness check (`{ status: "ok", database: "connected" }`)
-
----
-
-## 🚀 Getting Started & Setup
-
-### Prerequisites
-- Node.js (v20+ recommended)
-- PostgreSQL 16 (or Docker)
-
-### Installation
 ```bash
-# Clone the repository
-git clone https://github.com/Chiranjeevi-N-29/Study-Streak.git
-cd Study-Streak
+# Run backend test suite (136 tests passing)
+npm test -w backend
 
-# Install all dependencies across workspaces
-npm install
-```
+# Run frontend test suite (68 tests passing)
+npm test -w frontend
 
-### Environment Configuration
-Copy `.env.example` to `.env` in repository root:
-```bash
-cp .env.example .env
-```
-
-Customize environment keys:
-```env
-PORT=5000
-NODE_ENV=development
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/studystreak?schema=public
-JWT_SECRET=your_super_secret_jwt_key_here_change_in_production
-FRONTEND_URL=http://localhost:5173
-```
-
-### Running Local Database & Migrations
-```bash
-# Run Prisma migrations
-npx prisma migrate dev --schema=backend/prisma/schema.prisma
-
-# Seed static achievements
-npm run db:seed -w backend
-```
-
-### Running Development Servers
-```bash
-# Start both backend and frontend concurrently
-npm run dev
-```
-
----
-
-## 🧪 Quality Assurance & Testing
-
-Run the complete automated quality pipeline:
-```bash
-# Full quality check (Lint + Typecheck + Tests + Build)
+# Run complete quality pipeline (Typecheck + Lint + Tests + Build)
 npm run check
 ```
 
-Or individual checks:
-```bash
-# Run unit & integration tests (117 tests passing)
-npm test
+### Test Metrics Summary
+- **Backend Test Coverage**: 136 tests across 21 test suites (Unit + Supertest API Integration tests).
+- **Frontend Test Coverage**: 68 tests across 15 test suites (React Testing Library component & routing tests).
+- **Total Test Count**: **204 passing tests** across **36 test files** (0 failures).
+- **Type Safety**: Clean TypeScript compilation (`npx tsc --noEmit` & `npx tsc -b`) with zero errors.
 
-# Run TypeScript compilation checks
-npm run typecheck
+---
 
-# Run ESLint checks
-npm run lint
+## 🔒 Security Practices
 
-# Run production build
-npm run build
-```
+- **Zero Secret Exposure**: All environment secrets (`JWT_SECRET`, `DATABASE_URL`) are read via environment variables validated by Zod at startup.
+- **HTTP-Only Cookies**: JWT tokens are delivered in HTTP-only, `SameSite=Strict` secure cookies to prevent client-side script access.
+- **Strict Authorization**: Every resource lookup queries by primary key AND `userId` to eliminate IDOR (Insecure Direct Object Reference) vulnerabilities.
+- **Rate Limiting**: Dedicated rate limiting for authentication attempts (10 req / 15 min) and API endpoints (200 req / 15 min).
+- **Security Headers**: Integrated `helmet` middleware enforcing security headers.
+- **Production Sanitization**: Stack traces are stripped from API error responses when running in production mode.
+
+---
+
+## 💻 Local Setup & Development
+
+### Prerequisites
+- **Node.js**: v20+ recommended
+- **PostgreSQL**: v16+ (or run via Docker)
+
+### Installation & Initialization
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Chiranjeevi-N-29/Study-Streak.git
+   cd Study-Streak
+   ```
+
+2. **Install workspace dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables**:
+   Copy `.env.example` to `.env` in the project root:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Sample `.env` configuration:
+   ```env
+   PORT=5000
+   NODE_ENV=development
+   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/studystreak?schema=public"
+   JWT_SECRET="dev_secret_key_change_in_production"
+   FRONTEND_URL="http://localhost:5173"
+   ```
+
+4. **Run Database Migrations & Seed Data**:
+   ```bash
+   # Run Prisma migrations
+   npx prisma migrate dev --schema=backend/prisma/schema.prisma
+
+   # Seed initial achievement definitions
+   npm run db:seed -w backend
+   ```
+
+5. **Start Local Development Servers**:
+   ```bash
+   # Starts backend API on port 5000 and Vite frontend on port 5173 concurrently
+   npm run dev
+   ```
 
 ---
 
 ## 🐳 Docker Production Deployment
 
-To run the complete production stack (PostgreSQL + Express API Backend) using Docker Compose:
+Run the complete StudyStreak stack (PostgreSQL + Express API Backend + Nginx Static Frontend) with a single command:
 
 ```bash
 docker-compose up -d --build
 ```
 
-Verify service readiness:
-```bash
-curl http://localhost:5000/ready
+### Verified Endpoints
+- **Frontend UI**: `http://localhost:80`
+- **Backend API**: `http://localhost:5000`
+- **API Health Check**: `http://localhost:5000/health`
+- **Database Readiness Check**: `http://localhost:5000/ready`
+
+---
+
+## 🔌 API Catalog Summary
+
+| Module | Key Endpoints | Description |
+| :--- | :--- | :--- |
+| **Auth** | `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` | Authentication & session management |
+| **Study Plans** | `POST /api/study-plans`, `GET /api/study-plans`, `PUT /api/study-plans/:id`, `DELETE /api/study-plans/:id` | Daily plan CRUD & task reordering |
+| **Tasks** | `POST /api/study-plans/:planId/tasks`, `PUT /api/tasks/:id`, `DELETE /api/tasks/:id` | Task lifecycle & goal linking |
+| **Streak** | `GET /api/streak`, `POST /api/streak/recalculate` | Deterministic streak calculation |
+| **Focus** | `POST /api/focus-sessions/start`, `POST /api/focus-sessions/:id/pause`, `POST /api/focus-sessions/:id/complete` | Server-authoritative study timing |
+| **Goals** | `POST /api/goals`, `GET /api/goals`, `PUT /api/goals/:id`, `DELETE /api/goals/:id` | Long-term target tracking |
+| **Planner** | `GET /api/planner/grid`, `GET /api/planner/recommendations` | 7-day workload grid & recommendations |
+| **Groups** | `POST /api/groups`, `POST /api/groups/join`, `POST /api/groups/:id/goals`, `GET /api/groups/:id/leaderboard` | Privacy-first accountability groups |
+| **Reports** | `GET /api/reports`, `GET /api/reports/export?format=csv&dataset=tasks` | Analytics aggregation & JSON/CSV export |
+| **Notifications** | `GET /api/notifications`, `PUT /api/notifications/read-all`, `GET/PUT /api/notifications/preferences` | User notification drawer & settings |
+| **System** | `GET /health`, `GET /ready` | Operational status & DB ping |
+
+---
+
+## 📁 Repository Structure
+
+```text
+Study-Streak/
+├── .github/workflows/ci.yml # Automated CI test and build pipeline
+├── backend/
+│   ├── prisma/              # Prisma schema definition & database migrations
+│   ├── src/
+│   │   ├── config/          # Environment configuration, DB client, logger
+│   │   ├── middleware/      # Auth, rate limiting, request correlation ID, error handler
+│   │   ├── modules/         # Auth, StudyPlan, Task, Streak, Focus, Goal, Group, Report, Analytics
+│   │   ├── app.ts           # Express application declaration & middleware
+│   │   └── server.ts        # Server entry point
+│   ├── Dockerfile           # Multi-stage Node production container build
+│   └── package.json
+├── frontend/
+│   ├── nginx.conf           # Nginx SPA fallback routing & API proxy config
+│   ├── Dockerfile           # Multi-stage Nginx production build
+│   ├── src/
+│   │   ├── components/      # AppShell, NotificationCenter, UI primitives
+│   │   ├── context/         # AuthContext, ThemeContext
+│   │   ├── features/        # Auth, Dashboard, Planner, Focus, Groups, Goals, Calendar, Reports
+│   │   ├── pwa/             # Service Worker, PWA install prompt, Offline banner
+│   │   ├── services/        # Typed API Axios service layer
+│   │   └── App.tsx          # React router setup
+│   └── package.json
+├── docker-compose.yml       # Production container orchestration
+├── .env.example             # Safe environment variable template
+└── package.json             # Root monorepo scripts
 ```
 
 ---
 
-## 🚀 Production Deployment & Launch
+## 🌟 Technical Highlights & Engineering Decisions
 
-For detailed step-by-step production deployment instructions, environment variables, hosting options, and database migration commands, refer to the [Production Deployment Specification](file:///d:/projects/Study-Streak/docs/deployment.md).
-
-### Quick Deployment Checklist
-1. **Environment Configuration**: Copy `.env.example` to your hosting provider settings (`DATABASE_URL`, `JWT_SECRET`, `NODE_ENV=production`, `FRONTEND_URL`, `VITE_API_URL`).
-2. **Safe Migration Execution**: Run non-destructive production migrations:
-   ```bash
-   npx prisma migrate deploy --schema=backend/prisma/schema.prisma
-   ```
-3. **Idempotent Data Seeding**: Seed static achievement definitions:
-   ```bash
-   npm run db:seed -w backend
-   ```
-4. **Health & Readiness Verification**:
-   ```bash
-   curl https://api.studystreak.app/health
-   curl https://api.studystreak.app/ready
-   ```
+1. **Explainable Scheduling Recommendation Algorithm**: Rather than relying on non-deterministic external LLMs or black-box APIs, the Study Planner uses a deterministic scoring algorithm evaluating daily time capacity, priority weightings, and preferred study days for instant, reproducible schedule recommendations.
+2. **Deterministic Streak Engine**: Handles real-world study habits with strict logic — rest days preserve consecutive streaks, partial study days qualify as successes, and unrecorded past days retroactively calculate as missed without corrupting streak data.
+3. **Zero-Social Privacy Accountability**: Designed specifically for focused study. Group members share progress metrics and goal milestones without exposing private tasks, notes, or personal study logs.
+4. **Offline PWA Service Worker**: Custom service worker handles offline application loading while explicitly isolating authenticated `/api/*` network requests to guarantee multi-tenant security and zero cached session leakage.
 
 ---
 
-## 👨‍💻 Author
-**Chiranjeevi N** — Full-Stack Software Engineer
+## 👤 Author
 
+**Chiranjeevi N** — Full-Stack Software Engineer  
+GitHub: [@Chiranjeevi-N-29](https://github.com/Chiranjeevi-N-29)
+
+---
+
+> *StudyStreak — Build consistency, one day at a time.*
