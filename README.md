@@ -38,6 +38,12 @@ The core philosophy is:
 - Timezone-aware study and reflection reminders matching users' local times (`Asia/Kolkata`, `America/New_York`, `UTC`, etc.).
 - Notifications center in application header with unread badge count, dropdown drawer, and opt-in browser notifications.
 
+### 📱 Progressive Web App (PWA) & Offline Capabilities
+- **Installable Desktop & Mobile App**: Web App Manifest with standalone display mode, 192x192 / 512x512 maskable icons, and native install invitation prompt.
+- **Production Service Worker (`sw.js`)**: Static asset cache-first strategy, automatic cache versioning cleanup, and navigation fallback for offline SPA routing (`/app`, `/app/focus`, `/app/planner`, etc.).
+- **Online/Offline Status Banner**: Real-time non-intrusive status toast indicating offline state and automatic recovery notification when connection returns.
+- **Strict Data Isolation**: Authenticated `/api/*` endpoints strictly bypass service worker caching to prevent multi-tenant data leaks. Runtime caches are explicitly purged on logout.
+
 ### 🛡️ Production Hardening & Security
 - **Startup Validation**: Environment variables validated at startup using Zod (`DATABASE_URL`, `JWT_SECRET`, `NODE_ENV`, `FRONTEND_URL`).
 - **Security Headers**: `helmet` integration enforcing frameguard, X-Content-Type-Options, HSTS, and Referrer-Policy.

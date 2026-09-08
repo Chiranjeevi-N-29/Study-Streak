@@ -3,6 +3,8 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext.js';
 import { useTheme } from '../context/ThemeContext.js';
 import { NotificationCenter } from './NotificationCenter.js';
+import { OfflineBanner } from '../pwa/components/OfflineBanner.js';
+import { PWAInstallPrompt } from '../pwa/components/PWAInstallPrompt.js';
 import './AppShell.css';
 import './UIPrimitives.css';
 
@@ -177,6 +179,8 @@ export const AppShell: React.FC = () => {
 
         {/* Content Panel Container */}
         <main className="app-content">
+          <OfflineBanner />
+          <PWAInstallPrompt />
           <Outlet />
         </main>
       </div>

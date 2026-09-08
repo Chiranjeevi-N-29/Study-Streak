@@ -76,6 +76,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       await authApi.logout();
+      if (typeof window !== 'undefined' && 'caches' in window) {
+        await caches.delete('studystreak-runtime-v1');
+      }
     } catch {
       // Allow clean layout update even if API clearance fails
     } finally {
