@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { focusSessionApi, studyPlanApi, preferencesApi } from '../../../services/api.js';
+import { focusSessionApi, studyPlanApi, preferencesApi, groupsApi } from '../../../services/api.js';
 import type { FocusSession, StudyTask } from '../../../services/api.js';
 import '../../../components/UIPrimitives.css';
 import './FocusTimerWidget.css';
@@ -27,14 +27,18 @@ export const FocusTimerWidget: React.FC<FocusTimerWidgetProps> = ({
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch active session & today's tasks & user preferences
+  const [groupGoals, setGroupGoals] = useState<{ id: string; title: string; groupName: string }[]>([]);
+  const [selectedGroupGoalId, setSelectedGroupGoalId] = useState<string>('');
+
+  // Fetch active session & today's tasks & user preferences & group goals
   const fetchActiveState = async () => {
     try {
       setError(null);
-      const [activeRes, planRes, prefRes] = await Promise.all([
+      const [activeRes, planRes, prefRes, groupsRes] = await Promise.all([
         focusSessionApi.getActive(),
         propsTasks ? Promise.resolve(null) : studyPlanApi.getToday().catch(() => null),
         preferencesApi.get().catch(() => null),
+        groupsApi.getUserGroups().catch(() => null),
       ]);
 
       if (activeRes.success) {
@@ -49,6 +53,20 @@ export const FocusTimerWidget: React.FC<FocusTimerWidgetProps> = ({
 
       if (prefRes && prefRes.success && prefRes.preferences) {
         setTargetFocusMinutes(prefRes.preferences.defaultFocusDurationMinutes);
+      }
+
+      if (groupsRes && groupsRes.success && groupsRes.groups) {
+        const flattenedGoals: { id: string; title: string; groupName: string }[] = [];
+        groupsRes.groups.forEach((g) => {
+          g.activeGoals.forEach((goal) => {
+            flattenedGoals.push({
+              id: goal.id,
+              title: goal.title,
+              groupName: g.name,
+            });
+          });
+        });
+        setGroupGoals(flattenedGoals);
       }
     } catch (err) {
       console.error('FocusTimerWidget sync error:', err);
@@ -157,9 +175,10 @@ export const FocusTimerWidget: React.FC<FocusTimerWidgetProps> = ({
     setActionLoading(true);
     setError(null);
     try {
-      const res = await focusSessionApi.complete(activeSession.id);
+      const res = await focusSessionApi.complete(activeSession.id, selectedGroupGoalId || undefined);
       if (res.success) {
         setActiveSession(null);
+        setSelectedGroupGoalId('');
         if (onSessionCompleted) {
           onSessionCompleted();
         }
@@ -269,6 +288,33 @@ export const FocusTimerWidget: React.FC<FocusTimerWidgetProps> = ({
               }}
             >
               Focus target reached 🎉
+            </div>
+          )}
+
+          {groupGoals.length > 0 && (
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-muted)' }}>
+                👥 Share session with Group Goal (optional):
+              </label>
+              <select
+                value={selectedGroupGoalId}
+                onChange={(e) => setSelectedGroupGoalId(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid var(--border-color, #cbd5e1)',
+                  fontSize: '13px',
+                  background: 'var(--bg-card, #ffffff)',
+                }}
+              >
+                <option value="">Don't link to a group goal (Private)</option>
+                {groupGoals.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    [{g.groupName}] {g.title}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 

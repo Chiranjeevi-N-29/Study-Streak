@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import {
   startFocusSessionSchema,
+  completeFocusSessionSchema,
   listFocusSessionsSchema,
 } from './focus-session.schema.js';
 import * as focusSessionService from './focus-session.service.js';
@@ -94,8 +95,13 @@ export const completeSession = async (
   try {
     const userId = req.user!.id;
     const sessionId = req.params.id;
+    const input = completeFocusSessionSchema.parse(req.body ?? {});
 
-    const session = await focusSessionService.completeFocusSession(userId, sessionId);
+    const session = await focusSessionService.completeFocusSession(
+      userId,
+      sessionId,
+      input.groupGoalId ?? undefined
+    );
 
     res.status(200).json({
       success: true,

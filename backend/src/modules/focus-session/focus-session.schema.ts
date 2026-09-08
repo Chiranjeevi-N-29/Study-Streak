@@ -5,6 +5,10 @@ export const startFocusSessionSchema = z.object({
   taskId: z.string().uuid('Invalid task ID format').optional(),
 });
 
+export const completeFocusSessionSchema = z.object({
+  groupGoalId: z.string().uuid('Invalid group goal ID').optional().nullable(),
+});
+
 export const listFocusSessionsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
@@ -15,4 +19,5 @@ export const listFocusSessionsSchema = z.object({
 });
 
 export type StartFocusSessionInput = z.infer<typeof startFocusSessionSchema>;
+export type CompleteFocusSessionInput = z.infer<typeof completeFocusSessionSchema>;
 export type ListFocusSessionsQuery = z.infer<typeof listFocusSessionsSchema>;

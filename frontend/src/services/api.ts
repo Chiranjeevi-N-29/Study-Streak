@@ -508,9 +508,10 @@ export const focusSessionApi = {
       method: 'POST',
     });
   },
-  complete: (id: string) => {
+  complete: (id: string, groupGoalId?: string) => {
     return request<{ success: boolean; message: string; session: FocusSession }>(`/focus-sessions/${id}/complete`, {
       method: 'POST',
+      body: JSON.stringify({ groupGoalId }),
     });
   },
   cancel: (id: string) => {
@@ -741,6 +742,163 @@ export const plannerApi = {
     return request<{ success: boolean; data: Record<string, unknown> }>('/planner/analytics', { method: 'GET' });
   },
 };
+
+// ─── Study Groups ─────────────────────────────────────────────────────────────
+
+export type GroupMemberRole = 'OWNER' | 'ADMIN' | 'MEMBER';
+export type StudyGroupStatus = 'ACTIVE' | 'ARCHIVED';
+export type GroupGoalStatus = 'ACTIVE' | 'COMPLETED' | 'ARCHIVED';
+
+export interface GroupMemberSummary {
+  id: string;
+  name: string;
+  role: GroupMemberRole;
+  joinedAt?: string;
+  hasActivityToday: boolean;
+}
+
+export interface GroupGoalSummary {
+  id: string;
+  title: string;
+  description?: string | null;
+  targetMinutes: number;
+  currentMinutes: number;
+  progressPct: number;
+  status: GroupGoalStatus;
+  createdAt?: string;
+  completedAt?: string | null;
+}
+
+export interface GroupStreakInfo {
+  currentStreak: number;
+  longestStreak: number;
+  lastActiveDate?: string | null;
+}
+
+export interface StudyGroupListItem {
+  id: string;
+  name: string;
+  description?: string | null;
+  status: StudyGroupStatus;
+  maxMembers: number;
+  memberCount: number;
+  userRole: GroupMemberRole;
+  inviteCode: string;
+  activeGoals: GroupGoalSummary[];
+  streak: GroupStreakInfo;
+  createdAt: string;
+  joinedAt: string;
+}
+
+export interface StudyGroupDetail {
+  id: string;
+  name: string;
+  description?: string | null;
+  inviteCode: string;
+  maxMembers: number;
+  status: StudyGroupStatus;
+  ownerId: string;
+  memberCount: number;
+  createdAt: string;
+  updatedAt: string;
+  members: GroupMemberSummary[];
+  goals: GroupGoalSummary[];
+  streak: GroupStreakInfo;
+}
+
+export interface GroupLeaderboardItem {
+  name: string;
+  weeklyMinutes: number;
+}
+
+export interface GroupProgressData {
+  memberCount: number;
+  activeTodayCount: number;
+  members: GroupMemberSummary[];
+  goals: GroupGoalSummary[];
+  streak: GroupStreakInfo;
+  leaderboard: GroupLeaderboardItem[];
+}
+
+export const groupsApi = {
+  create: (data: { name: string; description?: string; maxMembers?: number }) => {
+    return request<{ success: boolean; group: StudyGroupDetail; memberCount: number }>('/groups', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  getUserGroups: () => {
+    return request<{ success: boolean; groups: StudyGroupListItem[] }>('/groups', {
+      method: 'GET',
+    });
+  },
+  getById: (id: string) => {
+    return request<{ success: boolean; group: StudyGroupDetail }>(`/groups/${id}`, {
+      method: 'GET',
+    });
+  },
+  update: (id: string, data: { name?: string; description?: string | null; maxMembers?: number }) => {
+    return request<{ success: boolean; group: StudyGroupDetail }>(`/groups/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+  archive: (id: string) => {
+    return request<{ success: boolean; group: StudyGroupDetail }>(`/groups/${id}`, {
+      method: 'DELETE',
+    });
+  },
+  regenerateInviteCode: (id: string) => {
+    return request<{ success: boolean; inviteCode: string }>(`/groups/${id}/regenerate-invite`, {
+      method: 'POST',
+    });
+  },
+  join: (inviteCode: string) => {
+    return request<{ success: boolean; group: StudyGroupListItem; membership: any }>('/groups/join', {
+      method: 'POST',
+      body: JSON.stringify({ inviteCode }),
+    });
+  },
+  leave: (id: string) => {
+    return request<{ success: boolean }>(`/groups/${id}/leave`, {
+      method: 'POST',
+    });
+  },
+  transferOwnership: (id: string, newOwnerId: string) => {
+    return request<{ success: boolean }>(`/groups/${id}/transfer-ownership`, {
+      method: 'POST',
+      body: JSON.stringify({ newOwnerId }),
+    });
+  },
+  getMembers: (id: string) => {
+    return request<{ success: boolean; members: GroupMemberSummary[] }>(`/groups/${id}/members`, {
+      method: 'GET',
+    });
+  },
+  updateMemberRole: (id: string, userId: string, role: 'ADMIN' | 'MEMBER') => {
+    return request<{ success: boolean; member: any }>(`/groups/${id}/members/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ role }),
+    });
+  },
+  removeMember: (id: string, userId: string) => {
+    return request<{ success: boolean }>(`/groups/${id}/members/${userId}`, {
+      method: 'DELETE',
+    });
+  },
+  createGoal: (id: string, data: { title: string; description?: string; targetMinutes: number }) => {
+    return request<{ success: boolean; goal: GroupGoalSummary }>(`/groups/${id}/goals`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  getProgress: (id: string) => {
+    return request<{ success: boolean; progress: GroupProgressData }>(`/groups/${id}/progress`, {
+      method: 'GET',
+    });
+  },
+};
+
 
 
 

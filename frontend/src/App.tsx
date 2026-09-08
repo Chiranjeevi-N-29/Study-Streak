@@ -15,6 +15,8 @@ import { FocusPage } from './features/focus/FocusPage.js';
 import { SettingsPage } from './features/settings/SettingsPage.js';
 import { GoalsPage } from './features/goals/GoalsPage.js';
 import { GoalDetailPage } from './features/goals/GoalDetailPage.js';
+import { GroupsPage } from './features/groups/GroupsPage.js';
+import { GroupDetailPage } from './features/groups/GroupDetailPage.js';
 import { PlaceholderPage } from './components/PlaceholderPage.js';
 import './App.css';
 
@@ -54,6 +56,8 @@ function App() {
               <Route path="/app" element={<DashboardPage />} />
               <Route path="/app/goals" element={<GoalsPage />} />
               <Route path="/app/goals/:id" element={<GoalDetailPage />} />
+              <Route path="/app/groups" element={<GroupsPage />} />
+              <Route path="/app/groups/:id" element={<GroupDetailPage />} />
               <Route path="/app/focus" element={<FocusPage />} />
               <Route path="/app/planner" element={<StudyPlanner />} />
               <Route path="/app/calendar" element={<CalendarPage />} />

@@ -10,6 +10,7 @@ import { TodayPlanCard } from './components/TodayPlanCard.js';
 import { DailyProgress } from './components/DailyProgress.js';
 import { FocusTimerWidget } from '../focus/components/FocusTimerWidget.js';
 import { ActiveGoalsWidget } from '../goals/components/ActiveGoalsWidget.js';
+import { GroupDashboardWidget } from '../groups/GroupDashboardWidget.js';
 import { PlannerWeeklyWidget } from './PlannerWeeklyWidget.js';
 
 import './Dashboard.css';
@@ -172,6 +173,9 @@ export const DashboardPage: React.FC = () => {
 
         {/* Active Study Goals Widget */}
         <ActiveGoalsWidget />
+
+        {/* Study Groups Widget */}
+        <GroupDashboardWidget />
 
 
         {/* Recent Milestone card */}

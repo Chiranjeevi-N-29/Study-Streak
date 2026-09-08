@@ -18,6 +18,7 @@ import focusSessionRoutes from './modules/focus-session/focus-session.routes.js'
 import profilePreferencesRoutes from './modules/profile-preferences/profile-preferences.routes.js';
 import goalRoutes from './modules/goal/goal.routes.js';
 import plannerRoutes from './modules/planner/planner.routes.js';
+import groupRoutes from './modules/study-group/study-group.routes.js';
 
 const app = express();
 
@@ -96,6 +97,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/focus-sessions', focusSessionRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/planner', plannerRoutes);
+app.use('/api/groups', groupRoutes);
 app.use('/api', profilePreferencesRoutes);
 app.use('/api', analyticsRoutes);
 

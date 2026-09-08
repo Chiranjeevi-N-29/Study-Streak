@@ -53,6 +53,108 @@ enum NotificationType {
   REFLECTION_REMINDER
   ACHIEVEMENT_UNLOCKED
   STREAK_MILESTONE
+  GROUP_JOINED
+  GROUP_MEMBER_JOINED
+  GROUP_GOAL_MILESTONE
+}
+
+enum StudyGroupStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum GroupMemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum GroupGoalStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+// ─── Study Groups ────────────────────────────────────────────────────────────
+
+model StudyGroup {
+  id          String           @id @default(uuid())
+  ownerId     String
+  name        String
+  description String?
+  inviteCode  String           @unique
+  maxMembers  Int              @default(5)
+  status      StudyGroupStatus @default(ACTIVE)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  members StudyGroupMember[]
+  goals   GroupGoal[]
+  streak  GroupStreak?
+
+  @@index([ownerId])
+  @@index([inviteCode])
+  @@index([status])
+}
+
+model StudyGroupMember {
+  id        String          @id @default(uuid())
+  groupId   String
+  group     StudyGroup      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      GroupMemberRole @default(MEMBER)
+  joinedAt  DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([userId])
+}
+
+model GroupGoal {
+  id             String          @id @default(uuid())
+  groupId        String
+  group          StudyGroup      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  targetMinutes  Int
+  currentMinutes Int             @default(0)
+  status         GroupGoalStatus @default(ACTIVE)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  completedAt    DateTime?
+
+  contributions GroupFocusContribution[]
+
+  @@index([groupId])
+  @@index([groupId, status])
+}
+
+model GroupFocusContribution {
+  id              String    @id @default(uuid())
+  groupGoalId     String
+  groupGoal       GroupGoal @relation(fields: [groupGoalId], references: [id], onDelete: Cascade)
+  userId          String
+  focusSessionId  String
+  durationSeconds Int
+  date            String
+  createdAt       DateTime  @default(now())
+
+  @@unique([groupGoalId, focusSessionId])
+  @@index([groupGoalId])
+  @@index([groupGoalId, date])
+  @@index([userId])
+}
+
+model GroupStreak {
+  id             String     @id @default(uuid())
+  groupId        String     @unique
+  group          StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  currentStreak  Int        @default(0)
+  longestStreak  Int        @default(0)
+  lastActiveDate String?
+  updatedAt      DateTime   @updatedAt
 }
 
 enum FocusSessionStatus {
@@ -79,6 +181,7 @@ model User {
   streak                 Streak?
   notificationPreference NotificationPreference?
   userPreferences        UserPreferences?
+  groupMemberships       StudyGroupMember[]
 
   @@index([email])
 }

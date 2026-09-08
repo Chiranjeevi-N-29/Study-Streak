@@ -5,6 +5,7 @@ import { recalculateUserStreak } from '../streak/streak.service.js';
 import { evaluateUserAchievements } from '../achievement/achievement.service.js';
 import { createNotification } from '../notification/notification.service.js';
 import { recalculateGoalProgress } from '../goal/goal.service.js';
+import { contributeToGroupGoal } from '../study-group/study-group.service.js';
 
 export interface FocusStats {
   totalFocusSeconds: number;
@@ -149,7 +150,7 @@ export const resumeFocusSession = async (userId: string, sessionId: string) => {
   });
 };
 
-export const completeFocusSession = async (userId: string, sessionId: string) => {
+export const completeFocusSession = async (userId: string, sessionId: string, groupGoalId?: string) => {
   const session = await prisma.focusSession.findUnique({
     where: { id: sessionId },
     include: { task: true },
@@ -225,6 +226,15 @@ export const completeFocusSession = async (userId: string, sessionId: string) =>
     });
   } catch (err) {
     console.error('Error triggering downstream integrations after focus session completion:', err);
+  }
+
+  // Group Goal Contribution (explicit opt-in, user chose to share)
+  if (groupGoalId && finalDurationSec > 0) {
+    try {
+      await contributeToGroupGoal(userId, groupGoalId, completedSession.id, finalDurationSec);
+    } catch (err) {
+      console.error('Error contributing to group goal after focus session:', err);
+    }
   }
 
   return completedSession;

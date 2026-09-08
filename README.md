@@ -57,6 +57,16 @@ The core philosophy is:
 
 
 
+### 👥 Study Groups & Accountability
+- **Small Private Groups**: Create small study groups (2–20 members) or join via permanent 10-character cryptographically secure invite codes.
+- **Role-Based Membership**: Fine-grained permissions (`OWNER`, `ADMIN`, `MEMBER`) allowing member promotion, demotion, removal, and transfer of ownership.
+- **Shared Group Goals**: Collaborative study targets (e.g. "Complete 50 Hours of DSA Practice") with aggregate progress tracking.
+- **Explicit Focus Time Opt-in**: Users choose when to link a completed focus session to a group goal — private focus time, study tasks, and reflections remain 100% private and are never exposed.
+- **Group Streak Engine**: Independent UTC-based group streak engine incrementing when at least one member contributes focus time to a group goal on a calendar date.
+- **7-Day Member Leaderboard**: Aggregate focus minutes per member (names + minutes only, zero private task details disclosed).
+- **In-App Group Notifications**: System notifications triggered on group joining, new member arrival, and group goal milestone achievements.
+- **Dashboard Group Widget**: Compact `GroupDashboardWidget` on the main dashboard showing active groups, goal progress, and group streak.
+
 ### 🛡️ Production Hardening & Security
 - **Startup Validation**: Environment variables validated at startup using Zod (`DATABASE_URL`, `JWT_SECRET`, `NODE_ENV`, `FRONTEND_URL`).
 - **Security Headers**: `helmet` integration enforcing frameguard, X-Content-Type-Options, HSTS, and Referrer-Policy.

@@ -64,6 +64,12 @@ vi.mock('../../services/api.js', () => {
         goals: [],
       }),
     },
+    groupsApi: {
+      getUserGroups: vi.fn().mockResolvedValue({
+        success: true,
+        groups: [],
+      }),
+    },
   };
 });
 

@@ -137,6 +137,12 @@ export const AppShell: React.FC = () => {
                 🎯 Study Goals
               </NavLink>
               <NavLink 
+                to="/app/groups" 
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              >
+                👥 Study Groups
+              </NavLink>
+              <NavLink 
                 to="/app/focus" 
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
               >
