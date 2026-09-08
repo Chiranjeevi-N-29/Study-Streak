@@ -98,6 +98,25 @@ export const getUserAnalytics = async (
     },
   });
 
+  // 4b. Fetch Standalone Completed Focus Sessions (taskId == null to prevent double counting with task.actualDuration)
+  const standaloneSessions = prisma.focusSession?.findMany
+    ? await prisma.focusSession.findMany({
+        where: {
+          userId,
+          taskId: null,
+          status: 'COMPLETED',
+          ...(range !== 'all' ? { startedAt: { gte: new Date(cutoffStr) } } : {}),
+        },
+      })
+    : [];
+
+  const standaloneSessionMap = new Map<string, number>();
+  standaloneSessions.forEach((s) => {
+    const dateStr = formatDateIso(s.startedAt);
+    const mins = Math.round(s.durationSeconds / 60);
+    standaloneSessionMap.set(dateStr, (standaloneSessionMap.get(dateStr) || 0) + mins);
+  });
+
   // 5. Aggregate Core KPIs & Consistency Counts
   const planMap = new Map<string, (typeof plans)[0]>();
   plans.forEach((p) => planMap.set(p.date, p));
@@ -196,6 +215,21 @@ export const getUserAnalytics = async (
     } else if (dateStr < todayStr) {
       dayStatus = 'MISSED';
       missedDays++;
+    }
+
+    // Add standalone focus session minutes if any
+    const standaloneMins = standaloneSessionMap.get(dateStr) || 0;
+    if (standaloneMins > 0) {
+      dayStudyMinutes += standaloneMins;
+      totalStudyMinutes += standaloneMins;
+      const existingCat = categoryMap.get('Focus Sessions') || {
+        category: 'Focus Sessions',
+        studyMinutes: 0,
+        taskCount: 0,
+        completedCount: 0,
+      };
+      existingCat.studyMinutes += standaloneMins;
+      categoryMap.set('Focus Sessions', existingCat);
     }
 
     if (dayOfWeekMinutesMap[dayOfWeek]) {

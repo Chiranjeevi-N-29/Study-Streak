@@ -41,6 +41,13 @@ enum NotificationType {
   STREAK_MILESTONE
 }
 
+enum FocusSessionStatus {
+  RUNNING
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id                     String                 @id @default(uuid())
   email                  String                 @unique
@@ -53,6 +60,7 @@ model User {
   reflections            DailyReflection[]
   achievements           UserAchievement[]
   notifications          Notification[]
+  focusSessions          FocusSession[]
   streak                 Streak?
   notificationPreference NotificationPreference?
 
@@ -77,19 +85,20 @@ model StudyPlan {
 }
 
 model StudyTask {
-  id                String    @id @default(uuid())
+  id                String         @id @default(uuid())
   studyPlanId       String
-  studyPlan         StudyPlan @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
+  studyPlan         StudyPlan      @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
   title             String
   description       String?
   category          String
-  priority          Priority  @default(MEDIUM)
-  estimatedDuration Int       // in minutes
-  actualDuration    Int       @default(0) // in minutes
-  order             Int       @default(0)
-  status            Status    @default(TODO)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  priority          Priority       @default(MEDIUM)
+  estimatedDuration Int            // in minutes
+  actualDuration    Int            @default(0) // in minutes
+  order             Int            @default(0)
+  status            Status         @default(TODO)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  focusSessions     FocusSession[]
 
   @@index([studyPlanId])
 }
@@ -174,3 +183,25 @@ model NotificationPreference {
   createdAt                       DateTime @default(now())
   updatedAt                       DateTime @updatedAt
 }
+
+model FocusSession {
+  id                 String             @id @default(uuid())
+  userId             String
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId             String?
+  task               StudyTask?         @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  startedAt          DateTime           @default(now())
+  endedAt            DateTime?
+  durationSeconds    Int                @default(0)
+  pausedAt           DateTime?
+  totalPausedSeconds Int                @default(0)
+  status             FocusSessionStatus @default(RUNNING)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([userId, startedAt])
+  @@index([userId, status])
+  @@index([taskId])
+}
+

@@ -14,6 +14,7 @@ import streakRoutes from './modules/streak/streak.routes.js';
 import analyticsRoutes from './modules/analytics/analytics.routes.js';
 import achievementRoutes from './modules/achievement/achievement.routes.js';
 import notificationRoutes from './modules/notification/notification.routes.js';
+import focusSessionRoutes from './modules/focus-session/focus-session.routes.js';
 
 const app = express();
 
@@ -88,6 +89,7 @@ app.use('/api/tasks', studyTaskRoutes);
 app.use('/api/streak', streakRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/focus-sessions', focusSessionRoutes);
 app.use('/api', analyticsRoutes);
 
 // Health Check Endpoint

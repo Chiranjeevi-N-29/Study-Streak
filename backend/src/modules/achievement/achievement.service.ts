@@ -39,10 +39,31 @@ export const evaluateUserAchievements = async (userId: string) => {
   const completedTaskCount = completedTasks.length;
 
   // Sum actual study minutes across tasks
-  const totalStudyMinutes = completedTasks.reduce(
+  const taskStudyMinutes = completedTasks.reduce(
     (sum, t) => sum + (t.actualDuration || 0),
     0
   );
+
+  // Sum standalone completed focus sessions (taskId == null)
+  const standaloneFocusSessions = prisma.focusSession?.findMany
+    ? await prisma.focusSession.findMany({
+        where: {
+          userId,
+          taskId: null,
+          status: 'COMPLETED',
+        },
+        select: {
+          durationSeconds: true,
+        },
+      })
+    : [];
+
+  const standaloneFocusMinutes = standaloneFocusSessions.reduce(
+    (sum, s) => sum + Math.round(s.durationSeconds / 60),
+    0
+  );
+
+  const totalStudyMinutes = taskStudyMinutes + standaloneFocusMinutes;
 
   // Count daily reflections
   const reflectionsCount = await prisma.dailyReflection.count({

@@ -11,6 +11,7 @@ import { GuestRoute } from './components/GuestRoute.js';
 import { CalendarPage } from './features/calendar/CalendarPage.js';
 import { AnalyticsPage } from './features/analytics/AnalyticsPage.js';
 import { AchievementsPage } from './features/achievements/AchievementsPage.js';
+import { FocusPage } from './features/focus/FocusPage.js';
 import { SettingsPage } from './features/settings/SettingsPage.js';
 import { PlaceholderPage } from './components/PlaceholderPage.js';
 import './App.css';
@@ -49,6 +50,7 @@ function App() {
             >
               <Route path="/" element={<Navigate to="/app" replace />} />
               <Route path="/app" element={<DashboardPage />} />
+              <Route path="/app/focus" element={<FocusPage />} />
               <Route path="/app/planner" element={<StudyPlanner />} />
               <Route path="/app/calendar" element={<CalendarPage />} />
               <Route path="/app/analytics" element={<AnalyticsPage />} />

@@ -326,3 +326,95 @@ export const notificationApi = {
     });
   },
 };
+
+export type FocusSessionStatus = 'RUNNING' | 'PAUSED' | 'COMPLETED' | 'CANCELLED';
+
+export interface FocusSession {
+  id: string;
+  userId: string;
+  taskId?: string | null;
+  task?: StudyTask | null;
+  startedAt: string;
+  endedAt?: string | null;
+  durationSeconds: number;
+  pausedAt?: string | null;
+  totalPausedSeconds: number;
+  status: FocusSessionStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FocusStats {
+  totalFocusSeconds: number;
+  todayFocusSeconds: number;
+  thisWeekFocusSeconds: number;
+  completedSessionsCount: number;
+  avgSessionSeconds: number;
+}
+
+export const focusSessionApi = {
+  start: (taskId?: string) => {
+    return request<{ success: boolean; message: string; session: FocusSession }>('/focus-sessions', {
+      method: 'POST',
+      body: JSON.stringify({ taskId }),
+    });
+  },
+  getActive: () => {
+    return request<{ success: boolean; activeSession: FocusSession | null }>('/focus-sessions/active', {
+      method: 'GET',
+    });
+  },
+  pause: (id: string) => {
+    return request<{ success: boolean; message: string; session: FocusSession }>(`/focus-sessions/${id}/pause`, {
+      method: 'POST',
+    });
+  },
+  resume: (id: string) => {
+    return request<{ success: boolean; message: string; session: FocusSession }>(`/focus-sessions/${id}/resume`, {
+      method: 'POST',
+    });
+  },
+  complete: (id: string) => {
+    return request<{ success: boolean; message: string; session: FocusSession }>(`/focus-sessions/${id}/complete`, {
+      method: 'POST',
+    });
+  },
+  cancel: (id: string) => {
+    return request<{ success: boolean; message: string; session: FocusSession }>(`/focus-sessions/${id}/cancel`, {
+      method: 'POST',
+    });
+  },
+  getStats: () => {
+    return request<{ success: boolean; stats: FocusStats }>('/focus-sessions/stats', {
+      method: 'GET',
+    });
+  },
+  list: (params?: { page?: number; limit?: number; status?: FocusSessionStatus; taskId?: string; startDate?: string; endDate?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.limit) query.append('limit', params.limit.toString());
+    if (params?.status) query.append('status', params.status);
+    if (params?.taskId) query.append('taskId', params.taskId);
+    if (params?.startDate) query.append('startDate', params.startDate);
+    if (params?.endDate) query.append('endDate', params.endDate);
+
+    const queryString = query.toString();
+    const url = queryString ? `/focus-sessions?${queryString}` : '/focus-sessions';
+    return request<{
+      success: boolean;
+      sessions: FocusSession[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>(url, {
+      method: 'GET',
+    });
+  },
+  getById: (id: string) => {
+    return request<{ success: boolean; session: FocusSession }>(`/focus-sessions/${id}`, {
+      method: 'GET',
+    });
+  },
+};
+

@@ -8,6 +8,7 @@ import { DashboardHeader } from './components/DashboardHeader.js';
 import { StreakSummary } from './components/StreakSummary.js';
 import { TodayPlanCard } from './components/TodayPlanCard.js';
 import { DailyProgress } from './components/DailyProgress.js';
+import { FocusTimerWidget } from '../focus/components/FocusTimerWidget.js';
 
 import './Dashboard.css';
 import '../../components/UIPrimitives.css';
@@ -148,6 +149,9 @@ export const DashboardPage: React.FC = () => {
 
       {/* Sidebar Column */}
       <div className="dashboard-sidebar">
+        {/* Active Focus Session Timer Widget */}
+        <FocusTimerWidget tasks={plan?.tasks} compact onSessionCompleted={fetchDashboardData} />
+
         {/* Streak summary panel */}
         <StreakSummary streak={streak} />
 
