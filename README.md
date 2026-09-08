@@ -38,11 +38,24 @@ The core philosophy is:
 - Timezone-aware study and reflection reminders matching users' local times (`Asia/Kolkata`, `America/New_York`, `UTC`, etc.).
 - Notifications center in application header with unread badge count, dropdown drawer, and opt-in browser notifications.
 
+
 ### 📱 Progressive Web App (PWA) & Offline Capabilities
 - **Installable Desktop & Mobile App**: Web App Manifest with standalone display mode, 192x192 / 512x512 maskable icons, and native install invitation prompt.
 - **Production Service Worker (`sw.js`)**: Static asset cache-first strategy, automatic cache versioning cleanup, and navigation fallback for offline SPA routing (`/app`, `/app/focus`, `/app/planner`, etc.).
 - **Online/Offline Status Banner**: Real-time non-intrusive status toast indicating offline state and automatic recovery notification when connection returns.
 - **Strict Data Isolation**: Authenticated `/api/*` endpoints strictly bypass service worker caching to prevent multi-tenant data leaks. Runtime caches are explicitly purged on logout.
+
+### 📅 Study Planner & Intelligent Schedule Builder
+- **Weekly Planning Grid**: Visual 7-day grid showing each day's scheduled workload, capacity bar, and task distribution across the current week.
+- **Deterministic Schedule Recommendations**: Algorithm-driven session suggestions scored by remaining daily capacity (`dailyStudyGoalMinutes`), preferred study days, and task priority — no LLM, fully explainable and testable.
+- **Workload Capacity Meter**: Per-day capacity visualization with colour-coded fill (green → amber → red) based on estimated vs. available study time.
+- **Goal-linked Tasks**: Tasks can be associated with long-term goals; goal label shown on every task card in the planner.
+- **Task Reordering**: Up/down reorder controls for precise prioritization within a day's plan.
+- **Smart Recommendation Dialog**: Side-panel showing AI-free, rule-based task scheduling suggestions across the week — highlights overloaded days and surfaces unscheduled high-priority items.
+- **Dashboard Weekly Widget**: Compact `PlannerWeeklyWidget` on the daily dashboard giving an at-a-glance view of the week's study workload without navigating away.
+- **Filter & Search**: Filter tasks by priority or linked goal directly within the planner view.
+
+
 
 ### 🛡️ Production Hardening & Security
 - **Startup Validation**: Environment variables validated at startup using Zod (`DATABASE_URL`, `JWT_SECRET`, `NODE_ENV`, `FRONTEND_URL`).

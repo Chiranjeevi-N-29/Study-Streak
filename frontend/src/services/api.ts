@@ -605,4 +605,142 @@ export const preferencesApi = {
   },
 };
 
+export type WorkloadStatus = 'Light' | 'Moderate' | 'Heavy' | 'Overloaded';
+
+export interface PlannerDayTask {
+  id: string;
+  title: string;
+  description?: string | null;
+  category: string;
+  priority: Priority;
+  status: Status;
+  estimatedDuration: number;
+  actualDuration: number;
+  order: number;
+  goalId?: string | null;
+  goalTitle?: string | null;
+  goalTargetDate?: string | null;
+}
+
+export interface PlannerDaySummary {
+  date: string;
+  dayName: string;
+  isToday?: boolean;
+  planId?: string | null;
+  title?: string | null;
+  status?: Status;
+  plannedMinutes: number;
+  actualFocusMinutes: number;
+  remainingCapacityMinutes: number;
+  dailyGoalMinutes: number;
+  workloadStatus: WorkloadStatus;
+  isOverloaded: boolean;
+  taskCount: number;
+  completedTaskCount: number;
+  tasks: PlannerDayTask[];
+}
+
+export interface PlannerWeeklyResponse {
+  success: boolean;
+  data: {
+    startDate: string;
+    endDate: string;
+    localToday: string;
+    dailyGoalMinutes: number;
+    weeklySummary: {
+      totalPlannedMinutes: number;
+      totalActualFocusMinutes: number;
+      totalTasks: number;
+      totalCompletedTasks: number;
+      completionRate: number;
+    };
+    days: PlannerDaySummary[];
+  };
+}
+
+export interface OverdueTask {
+  id: string;
+  title: string;
+  description?: string | null;
+  category: string;
+  priority: Priority;
+  status: Status;
+  estimatedDuration: number;
+  actualDuration: number;
+  plannedDate: string;
+  goalId?: string | null;
+  goalTitle?: string | null;
+  goalTargetDate?: string | null;
+}
+
+export interface OverdueResponse {
+  success: boolean;
+  data: {
+    localToday: string;
+    count: number;
+    tasks: OverdueTask[];
+  };
+}
+
+export interface CandidateRecommendation {
+  date: string;
+  dayName: string;
+  remainingCapacity: number;
+  reason: string;
+  matchesPreferredDay: boolean;
+  withinGoalTargetDate: boolean;
+}
+
+export interface RecommendationResponse {
+  success: boolean;
+  data: {
+    taskId: string;
+    taskTitle: string;
+    taskPriority: Priority;
+    estimatedDuration: number;
+    goalId?: string | null;
+    goalTitle?: string | null;
+    goalTargetDate?: string | null;
+    recommendedDate: string;
+    recommendedDayName: string;
+    reason: string;
+    remainingCapacityMinutes: number;
+    dailyGoalMinutes: number;
+    candidates: CandidateRecommendation[];
+  };
+}
+
+export const plannerApi = {
+  getWeek: (startDate?: string) => {
+    const query = startDate ? `?startDate=${startDate}` : '';
+    return request<PlannerWeeklyResponse>(`/planner/week${query}`, { method: 'GET' });
+  },
+  getDay: (date?: string) => {
+    const query = date ? `?date=${date}` : '';
+    return request<{ success: boolean; data: PlannerDaySummary }>(`/planner/day${query}`, { method: 'GET' });
+  },
+  getOverdue: () => {
+    return request<OverdueResponse>('/planner/overdue', { method: 'GET' });
+  },
+  getRecommendation: (taskId: string) => {
+    return request<RecommendationResponse>(`/planner/recommendations?taskId=${taskId}`, { method: 'GET' });
+  },
+  scheduleTask: (taskId: string, date: string, estimatedDuration?: number) => {
+    return request<{ success: boolean; message: string; task: StudyTask }>(`/planner/tasks/${taskId}/schedule`, {
+      method: 'POST',
+      body: JSON.stringify({ taskId, date, estimatedDuration }),
+    });
+  },
+  rescheduleTask: (taskId: string, targetDate: string, estimatedDuration?: number) => {
+    return request<{ success: boolean; message: string; task: StudyTask }>(`/planner/tasks/${taskId}/reschedule`, {
+      method: 'POST',
+      body: JSON.stringify({ targetDate, estimatedDuration }),
+    });
+  },
+  getAnalytics: () => {
+    return request<{ success: boolean; data: Record<string, unknown> }>('/planner/analytics', { method: 'GET' });
+  },
+};
+
+
 

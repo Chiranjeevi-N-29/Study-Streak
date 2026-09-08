@@ -10,6 +10,7 @@ import { TodayPlanCard } from './components/TodayPlanCard.js';
 import { DailyProgress } from './components/DailyProgress.js';
 import { FocusTimerWidget } from '../focus/components/FocusTimerWidget.js';
 import { ActiveGoalsWidget } from '../goals/components/ActiveGoalsWidget.js';
+import { PlannerWeeklyWidget } from './PlannerWeeklyWidget.js';
 
 import './Dashboard.css';
 import '../../components/UIPrimitives.css';
@@ -143,6 +144,9 @@ export const DashboardPage: React.FC = () => {
       <div className="dashboard-main">
         {/* Dynamic header greeting */}
         <DashboardHeader name={user?.name} />
+        
+        {/* Weekly Planner Summary Widget */}
+        <PlannerWeeklyWidget />
         
         {/* Today's plan details card */}
         <TodayPlanCard

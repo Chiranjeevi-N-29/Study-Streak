@@ -17,6 +17,7 @@ import notificationRoutes from './modules/notification/notification.routes.js';
 import focusSessionRoutes from './modules/focus-session/focus-session.routes.js';
 import profilePreferencesRoutes from './modules/profile-preferences/profile-preferences.routes.js';
 import goalRoutes from './modules/goal/goal.routes.js';
+import plannerRoutes from './modules/planner/planner.routes.js';
 
 const app = express();
 
@@ -94,6 +95,7 @@ app.use('/api/achievements', achievementRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/focus-sessions', focusSessionRoutes);
 app.use('/api/goals', goalRoutes);
+app.use('/api/planner', plannerRoutes);
 app.use('/api', profilePreferencesRoutes);
 app.use('/api', analyticsRoutes);
 

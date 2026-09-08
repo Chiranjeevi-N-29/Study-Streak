@@ -470,3 +470,428 @@
   color: var(--text);
   margin: 0;
 }
+
+/* Milestone 17: Study Planner & Intelligent Schedule Builder Styles */
+.weekly-planner-section {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.weekly-planner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.weekly-planner-header h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.weekly-planner-header p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.week-nav-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.weekly-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .weekly-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    overflow-x: auto;
+  }
+}
+
+.weekly-day-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.weekly-day-card:hover {
+  border-color: var(--accent);
+}
+
+.weekly-day-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-border);
+}
+
+.weekly-day-card.is-today {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.day-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.day-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.day-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.day-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.day-minutes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text);
+}
+
+.planned-mins {
+  font-weight: 600;
+}
+
+.actual-mins {
+  color: #3b82f6;
+}
+
+.workload-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.workload-badge.badge-light {
+  background: rgba(34, 197, 94, 0.15);
+  color: #166534;
+}
+
+.workload-badge.badge-moderate {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1e40af;
+}
+
+.workload-badge.badge-heavy {
+  background: rgba(245, 158, 11, 0.15);
+  color: #92400e;
+}
+
+.workload-badge.badge-overloaded {
+  background: rgba(239, 68, 68, 0.15);
+  color: #991b1b;
+}
+
+.selected-day-banner {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.selected-day-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.selected-day-info h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-h);
+}
+
+.day-capacity-meter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-grow: 1;
+  max-width: 400px;
+}
+
+.capacity-bar-container {
+  flex-grow: 1;
+  height: 10px;
+  background: var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.capacity-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.capacity-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.overloaded-warning {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #991b1b;
+  font-size: 13px;
+}
+
+.overdue-banner {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.overdue-banner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.overdue-banner-header h4 {
+  margin: 0;
+  color: #92400e;
+  font-size: 16px;
+}
+
+.btn-close-banner {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #92400e;
+  cursor: pointer;
+}
+
+.overdue-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.overdue-task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.overdue-date {
+  font-size: 12px;
+  color: #ef4444;
+  margin-left: 10px;
+}
+
+.overdue-goal {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 10px;
+}
+
+.overdue-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.planner-filter-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  background: var(--code-bg);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.filter-group select {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+}
+
+.task-meta-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.priority-pill, .duration-pill, .category-pill, .goal-pill {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.priority-pill.priority-high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.priority-pill.priority-medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
+.priority-pill.priority-low {
+  background: rgba(59, 130, 246, 0.15);
+  color: #2563eb;
+}
+
+.duration-pill {
+  background: rgba(147, 197, 253, 0.2);
+  color: #1d4ed8;
+}
+
+.category-pill {
+  background: var(--border);
+  color: var(--text);
+}
+
+.goal-pill {
+  background: rgba(168, 85, 247, 0.15);
+  color: #7e22ce;
+}
+
+.task-actions-menu {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 10px;
+  padding: 2px 4px;
+  color: var(--text-muted);
+}
+
+.btn-icon:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 550px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.recommendation-modal h3 {
+  margin-top: 0;
+  color: var(--text-h);
+}
+
+.rec-best-box {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 14px 0;
+}
+
+.rec-best-box h4 {
+  margin: 0 0 6px;
+  color: #1d4ed8;
+}
+
+.rec-reason {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.rec-candidates-list ul {
+  padding-left: 20px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.rec-candidates-list li {
+  margin-bottom: 4px;
+}
+
+.rec-candidates-list li.active-opt {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
