@@ -31,6 +31,20 @@ enum ConditionType {
   STUDY_TIME
   REFLECTIONS
   SUCCESSFUL_DAYS
+  GOALS_COMPLETED
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum GoalProgressType {
+  TASKS
+  FOCUS_TIME
+  MILESTONES
+  MANUAL
 }
 
 enum NotificationType {
@@ -61,6 +75,7 @@ model User {
   achievements           UserAchievement[]
   notifications          Notification[]
   focusSessions          FocusSession[]
+  studyGoals             StudyGoal[]
   streak                 Streak?
   notificationPreference NotificationPreference?
   userPreferences        UserPreferences?
@@ -89,6 +104,8 @@ model StudyTask {
   id                String         @id @default(uuid())
   studyPlanId       String
   studyPlan         StudyPlan      @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
+  goalId            String?
+  goal              StudyGoal?     @relation(fields: [goalId], references: [id], onDelete: SetNull)
   title             String
   description       String?
   category          String
@@ -102,6 +119,46 @@ model StudyTask {
   focusSessions     FocusSession[]
 
   @@index([studyPlanId])
+  @@index([goalId])
+}
+
+model StudyGoal {
+  id           String           @id @default(uuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  category     String?
+  targetDate   String?          // Stored as local date string YYYY-MM-DD
+  status       GoalStatus       @default(ACTIVE)
+  progressType GoalProgressType @default(FOCUS_TIME)
+  targetValue  Int?
+  currentValue Int              @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  completedAt  DateTime?
+
+  tasks      StudyTask[]
+  milestones GoalMilestone[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, targetDate])
+}
+
+model GoalMilestone {
+  id          String    @id @default(uuid())
+  goalId      String
+  goal        StudyGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  order       Int       @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([goalId])
 }
 
 model DailyReflection {

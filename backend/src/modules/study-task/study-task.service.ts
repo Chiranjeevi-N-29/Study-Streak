@@ -1,6 +1,7 @@
 import { prisma } from '../../config/db.js';
 import { CreateStudyTaskInput, UpdateStudyTaskInput } from './study-task.schema.js';
 import { recalculateUserStreak } from '../streak/streak.service.js';
+import { recalculateGoalProgress } from '../goal/goal.service.js';
 
 export const createStudyTask = async (userId: string, planId: string, input: CreateStudyTaskInput) => {
   const plan = await prisma.studyPlan.findUnique({
@@ -20,6 +21,17 @@ export const createStudyTask = async (userId: string, planId: string, input: Cre
     throw error;
   }
 
+  if (input.goalId) {
+    const goal = await prisma.studyGoal.findUnique({
+      where: { id: input.goalId },
+    });
+    if (!goal || goal.userId !== userId) {
+      const error = new Error('Goal not found or access denied') as Error & { statusCode?: number };
+      error.statusCode = 404;
+      throw error;
+    }
+  }
+
   // Find max order in plan
   const maxOrderTask = await prisma.studyTask.findFirst({
     where: { studyPlanId: planId },
@@ -30,6 +42,7 @@ export const createStudyTask = async (userId: string, planId: string, input: Cre
   const createdTask = await prisma.studyTask.create({
     data: {
       studyPlanId: planId,
+      goalId: input.goalId || null,
       title: input.title,
       description: input.description,
       category: input.category,
@@ -38,6 +51,10 @@ export const createStudyTask = async (userId: string, planId: string, input: Cre
       order,
     },
   });
+
+  if (input.goalId) {
+    await recalculateGoalProgress(input.goalId);
+  }
 
   await recalculateUserStreak(userId);
   return createdTask;
@@ -61,6 +78,19 @@ export const updateStudyTask = async (userId: string, taskId: string, input: Upd
     throw error;
   }
 
+  if (input.goalId) {
+    const goal = await prisma.studyGoal.findUnique({
+      where: { id: input.goalId },
+    });
+    if (!goal || goal.userId !== userId) {
+      const error = new Error('Goal not found or access denied') as Error & { statusCode?: number };
+      error.statusCode = 404;
+      throw error;
+    }
+  }
+
+  const previousGoalId = task.goalId;
+
   const updatedTask = await prisma.studyTask.update({
     where: { id: taskId },
     data: {
@@ -71,8 +101,16 @@ export const updateStudyTask = async (userId: string, taskId: string, input: Upd
       estimatedDuration: input.estimatedDuration !== undefined ? input.estimatedDuration : undefined,
       actualDuration: input.actualDuration !== undefined ? input.actualDuration : undefined,
       status: input.status !== undefined ? input.status : undefined,
+      goalId: input.goalId !== undefined ? input.goalId : undefined,
     },
   });
+
+  if (previousGoalId) {
+    await recalculateGoalProgress(previousGoalId);
+  }
+  if (updatedTask.goalId && updatedTask.goalId !== previousGoalId) {
+    await recalculateGoalProgress(updatedTask.goalId);
+  }
 
   await recalculateUserStreak(userId);
   return updatedTask;
@@ -96,9 +134,15 @@ export const deleteStudyTask = async (userId: string, taskId: string) => {
     throw error;
   }
 
+  const goalId = task.goalId;
+
   await prisma.studyTask.delete({
     where: { id: taskId },
   });
+
+  if (goalId) {
+    await recalculateGoalProgress(goalId);
+  }
 
   await recalculateUserStreak(userId);
   return { success: true };

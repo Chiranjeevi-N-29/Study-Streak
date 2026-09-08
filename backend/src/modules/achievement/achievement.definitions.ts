@@ -2,8 +2,8 @@ export interface AchievementDefinition {
   code: string;
   title: string;
   description: string;
-  category: 'STREAK' | 'TASKS' | 'STUDY_TIME' | 'REFLECTION' | 'CONSISTENCY';
-  conditionType: 'STREAK' | 'TASKS_COMPLETED' | 'STUDY_TIME' | 'REFLECTIONS' | 'SUCCESSFUL_DAYS';
+  category: 'STREAK' | 'TASKS' | 'STUDY_TIME' | 'REFLECTION' | 'CONSISTENCY' | 'GOALS';
+  conditionType: 'STREAK' | 'TASKS_COMPLETED' | 'STUDY_TIME' | 'REFLECTIONS' | 'SUCCESSFUL_DAYS' | 'GOALS_COMPLETED';
   conditionValue: number;
   icon: string;
 }
@@ -116,5 +116,32 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     conditionType: 'SUCCESSFUL_DAYS',
     conditionValue: 20,
     icon: '🌱',
+  },
+  {
+    code: 'FIRST_GOAL_COMPLETED',
+    title: 'Goal Achiever',
+    description: 'Complete your first study goal.',
+    category: 'GOALS',
+    conditionType: 'GOALS_COMPLETED',
+    conditionValue: 1,
+    icon: '🎯',
+  },
+  {
+    code: 'GOALS_3_COMPLETED',
+    title: 'Triple Milestone',
+    description: 'Complete 3 study goals.',
+    category: 'GOALS',
+    conditionType: 'GOALS_COMPLETED',
+    conditionValue: 3,
+    icon: '🎯',
+  },
+  {
+    code: 'GOALS_5_COMPLETED',
+    title: 'Master Planner',
+    description: 'Complete 5 study goals.',
+    category: 'GOALS',
+    conditionType: 'GOALS_COMPLETED',
+    conditionValue: 5,
+    icon: '🏆',
   },
 ];

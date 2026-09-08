@@ -56,6 +56,7 @@ export type Status =
 export interface StudyTask {
   id: string;
   studyPlanId: string;
+  goalId?: string | null;
   title: string;
   description?: string;
   category: string;
@@ -66,6 +67,40 @@ export interface StudyTask {
   status: Status;
   createdAt: string;
   updatedAt: string;
+}
+
+export type GoalStatus = 'ACTIVE' | 'COMPLETED' | 'ARCHIVED';
+export type GoalProgressType = 'TASKS' | 'FOCUS_TIME' | 'MILESTONES' | 'MANUAL';
+
+export interface GoalMilestone {
+  id: string;
+  goalId: string;
+  title: string;
+  description?: string | null;
+  order: number;
+  completed: boolean;
+  completedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StudyGoal {
+  id: string;
+  userId: string;
+  title: string;
+  description?: string | null;
+  category?: string | null;
+  targetDate?: string | null;
+  status: GoalStatus;
+  progressType: GoalProgressType;
+  targetValue?: number | null;
+  currentValue: number;
+  progressPercentage: number;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string | null;
+  tasks?: StudyTask[];
+  milestones?: GoalMilestone[];
 }
 
 export interface StudyPlan {
@@ -142,13 +177,13 @@ export const studyPlanApi = {
 };
 
 export const studyTaskApi = {
-  create: (planId: string, data: { title: string; description?: string; category: string; priority: Priority; estimatedDuration: number }) => {
+  create: (planId: string, data: { title: string; description?: string; category: string; priority: Priority; estimatedDuration: number; goalId?: string | null }) => {
     return request<{ success: boolean; studyTask: StudyTask }>(`/study-plans/${planId}/tasks`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
-  update: (id: string, data: { title?: string; description?: string; category?: string; priority?: Priority; estimatedDuration?: number; actualDuration?: number; status?: Status }) => {
+  update: (id: string, data: { title?: string; description?: string; category?: string; priority?: Priority; estimatedDuration?: number; actualDuration?: number; status?: Status; goalId?: string | null }) => {
     return request<{ success: boolean; studyTask: StudyTask }>(`/tasks/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -163,6 +198,105 @@ export const studyTaskApi = {
     return request<{ success: boolean; message: string }>(`/study-plans/${planId}/tasks/reorder`, {
       method: 'PUT',
       body: JSON.stringify({ orderedTaskIds }),
+    });
+  },
+};
+
+export const goalApi = {
+  list: (filter?: { status?: GoalStatus; category?: string; targetDate?: string }) => {
+    const query = new URLSearchParams();
+    if (filter?.status) query.append('status', filter.status);
+    if (filter?.category) query.append('category', filter.category);
+    if (filter?.targetDate) query.append('targetDate', filter.targetDate);
+    const queryString = query.toString();
+    const url = queryString ? `/goals?${queryString}` : '/goals';
+    return request<{ success: boolean; goals: StudyGoal[] }>(url, {
+      method: 'GET',
+    });
+  },
+  getById: (id: string) => {
+    return request<{ success: boolean; goal: StudyGoal }>(`/goals/${id}`, {
+      method: 'GET',
+    });
+  },
+  create: (data: {
+    title: string;
+    description?: string | null;
+    category?: string | null;
+    targetDate?: string | null;
+    progressType: GoalProgressType;
+    targetValue?: number | null;
+    milestones?: Array<{ title: string; description?: string | null }>;
+  }) => {
+    return request<{ success: boolean; message: string; goal: StudyGoal }>('/goals', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  update: (
+    id: string,
+    data: {
+      title?: string;
+      description?: string | null;
+      category?: string | null;
+      targetDate?: string | null;
+      progressType?: GoalProgressType;
+      targetValue?: number | null;
+    }
+  ) => {
+    return request<{ success: boolean; message: string; goal: StudyGoal }>(`/goals/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+  updateManualProgress: (id: string, currentValue: number) => {
+    return request<{ success: boolean; message: string; goal: StudyGoal }>(`/goals/${id}/progress`, {
+      method: 'PATCH',
+      body: JSON.stringify({ currentValue }),
+    });
+  },
+  complete: (id: string) => {
+    return request<{ success: boolean; message: string; goal: StudyGoal }>(`/goals/${id}/complete`, {
+      method: 'POST',
+    });
+  },
+  archive: (id: string) => {
+    return request<{ success: boolean; message: string; goal: StudyGoal }>(`/goals/${id}/archive`, {
+      method: 'POST',
+    });
+  },
+  unarchive: (id: string) => {
+    return request<{ success: boolean; message: string; goal: StudyGoal }>(`/goals/${id}/unarchive`, {
+      method: 'POST',
+    });
+  },
+  delete: (id: string) => {
+    return request<{ success: boolean; message: string }>(`/goals/${id}`, {
+      method: 'DELETE',
+    });
+  },
+  addMilestone: (goalId: string, data: { title: string; description?: string | null }) => {
+    return request<{ success: boolean; message: string; milestone: GoalMilestone }>(`/goals/${goalId}/milestones`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  updateMilestone: (
+    goalId: string,
+    milestoneId: string,
+    data: { title?: string; description?: string | null; completed?: boolean }
+  ) => {
+    return request<{ success: boolean; message: string; milestone: GoalMilestone }>(
+      `/goals/${goalId}/milestones/${milestoneId}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }
+    );
+  },
+  deleteMilestone: (goalId: string, milestoneId: string) => {
+    return request<{ success: boolean; message: string }>(`/goals/${goalId}/milestones/${milestoneId}`, {
+      method: 'DELETE',
     });
   },
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext.js';
-import { studyPlanApi, studyTaskApi, streakApi } from '../../services/api.js';
-import type { StudyPlan, StudyTask, Priority, Status, StreakInfo } from '../../services/api.js';
+import { studyPlanApi, studyTaskApi, streakApi, goalApi } from '../../services/api.js';
+import type { StudyPlan, StudyTask, Priority, Status, StreakInfo, StudyGoal } from '../../services/api.js';
 import './StudyPlanner.css';
 
 export const StudyPlanner: React.FC = () => {
@@ -13,6 +13,7 @@ export const StudyPlanner: React.FC = () => {
   
   const [plan, setPlan] = useState<StudyPlan | null>(null);
   const [streak, setStreak] = useState<StreakInfo | null>(null);
+  const [activeGoals, setActiveGoals] = useState<StudyGoal[]>([]);
   const [streakLoading, setStreakLoading] = useState<boolean>(true);
   
   // Plan creation form state
@@ -34,6 +35,7 @@ export const StudyPlanner: React.FC = () => {
   const [taskEstDuration, setTaskEstDuration] = useState<number>(30);
   const [taskActDuration, setTaskActDuration] = useState<number>(0);
   const [taskStatus, setTaskStatus] = useState<Status>('TODO');
+  const [taskGoalId, setTaskGoalId] = useState<string>('');
 
   const triggerStreakRefresh = async () => {
     try {
@@ -88,8 +90,20 @@ export const StudyPlanner: React.FC = () => {
       }
     };
 
+    const fetchActiveGoals = async () => {
+      try {
+        const res = await goalApi.list({ status: 'ACTIVE' });
+        if (active && res.success) {
+          setActiveGoals(res.goals);
+        }
+      } catch (err) {
+        console.error('Failed to load active goals for planner:', err);
+      }
+    };
+
     fetchTodayPlan();
     fetchStreakData();
+    fetchActiveGoals();
 
     return () => {
       active = false;
@@ -191,6 +205,7 @@ export const StudyPlanner: React.FC = () => {
     setTaskEstDuration(30);
     setTaskActDuration(0);
     setTaskStatus('TODO');
+    setTaskGoalId('');
     setShowTaskForm(true);
   };
 
@@ -203,6 +218,7 @@ export const StudyPlanner: React.FC = () => {
     setTaskEstDuration(task.estimatedDuration);
     setTaskActDuration(task.actualDuration);
     setTaskStatus(task.status);
+    setTaskGoalId(task.goalId || '');
     setShowTaskForm(true);
   };
 
@@ -222,6 +238,7 @@ export const StudyPlanner: React.FC = () => {
           estimatedDuration: taskEstDuration,
           actualDuration: taskActDuration,
           status: taskStatus,
+          goalId: taskGoalId || null,
         });
         
         // Update local plan state tasks
@@ -237,6 +254,7 @@ export const StudyPlanner: React.FC = () => {
           category: taskCategory,
           priority: taskPriority,
           estimatedDuration: taskEstDuration,
+          goalId: taskGoalId || null,
         });
 
         const updatedTasks = [...(plan.tasks || []), res.studyTask];
@@ -574,6 +592,25 @@ export const StudyPlanner: React.FC = () => {
                       </select>
                     </div>
                   </div>
+
+                  {activeGoals.length > 0 && (
+                    <div className="form-group">
+                      <label htmlFor="task-goal">Link to Study Goal (Optional)</label>
+                      <select
+                        id="task-goal"
+                        className="form-input"
+                        value={taskGoalId}
+                        onChange={(e) => setTaskGoalId(e.target.value)}
+                      >
+                        <option value="">-- No Goal Associated --</option>
+                        {activeGoals.map((g) => (
+                          <option key={g.id} value={g.id}>
+                            🎯 {g.title} ({g.category || 'General'})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   <div className="form-row">
                     <div className="form-group">

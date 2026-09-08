@@ -78,6 +78,14 @@ export const evaluateUserAchievements = async (userId: string) => {
     },
   });
 
+  // Count completed study goals
+  const completedGoalsCount = await prisma.studyGoal.count({
+    where: {
+      userId,
+      status: 'COMPLETED',
+    },
+  });
+
   // Map metric values by conditionType
   const metricValues: Record<string, number> = {
     STREAK: streakMetric,
@@ -85,6 +93,7 @@ export const evaluateUserAchievements = async (userId: string) => {
     STUDY_TIME: totalStudyMinutes,
     REFLECTIONS: reflectionsCount,
     SUCCESSFUL_DAYS: successfulDaysCount,
+    GOALS_COMPLETED: completedGoalsCount,
   };
 
   // Fetch all achievements from database (or predefined if seeding not completed yet)

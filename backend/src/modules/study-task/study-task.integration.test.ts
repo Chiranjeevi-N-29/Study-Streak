@@ -65,6 +65,7 @@ describe('Study Tasks API Endpoints', () => {
   const testTask = {
     id: 'task-uuid-456',
     studyPlanId: testPlan.id,
+    goalId: null,
     title: 'Learn Zod',
     description: 'Schema validations',
     category: 'TypeScript',

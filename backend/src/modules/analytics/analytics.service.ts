@@ -52,6 +52,12 @@ export interface AnalyticsSummary {
     counts: Record<string, number>;
     avgMinutesByMood: Record<string, number>;
   };
+  goalStats: {
+    activeGoalsCount: number;
+    completedGoalsCount: number;
+    archivedGoalsCount: number;
+    goalCompletionRate: number;
+  };
 }
 
 export const getUserAnalytics = async (
@@ -351,6 +357,20 @@ export const getUserAnalytics = async (
       arr.length > 0 ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0;
   });
 
+  // 11. Fetch Goal Statistics
+  const userGoals = prisma.studyGoal?.findMany
+    ? await prisma.studyGoal.findMany({
+        where: { userId },
+        select: { status: true },
+      })
+    : [];
+
+  const activeGoalsCount = userGoals.filter((g) => g.status === 'ACTIVE').length;
+  const completedGoalsCount = userGoals.filter((g) => g.status === 'COMPLETED').length;
+  const archivedGoalsCount = userGoals.filter((g) => g.status === 'ARCHIVED').length;
+  const totalGoals = activeGoalsCount + completedGoalsCount;
+  const goalCompletionRate = totalGoals > 0 ? Math.round((completedGoalsCount / totalGoals) * 100) : 0;
+
   return {
     range,
     kpis: {
@@ -378,6 +398,12 @@ export const getUserAnalytics = async (
     moodAnalytics: {
       counts: moodCounts,
       avgMinutesByMood,
+    },
+    goalStats: {
+      activeGoalsCount,
+      completedGoalsCount,
+      archivedGoalsCount,
+      goalCompletionRate,
     },
   };
 };

@@ -10,6 +10,7 @@ export const createStudyTaskSchema = z.object({
     .number({ invalid_type_error: 'Estimated duration must be a number' })
     .int('Estimated duration must be an integer')
     .min(0, 'Estimated duration cannot be negative'),
+  goalId: z.string().uuid('Invalid goal ID').optional().nullable(),
 });
 
 export const updateStudyTaskSchema = z.object({
@@ -28,6 +29,7 @@ export const updateStudyTaskSchema = z.object({
     .min(0, 'Actual duration cannot be negative')
     .optional(),
   status: z.nativeEnum(Status).optional(),
+  goalId: z.string().uuid('Invalid goal ID').optional().nullable(),
 });
 
 export const reorderTasksSchema = z.object({

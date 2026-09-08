@@ -4,6 +4,7 @@ import { ListFocusSessionsQuery } from './focus-session.schema.js';
 import { recalculateUserStreak } from '../streak/streak.service.js';
 import { evaluateUserAchievements } from '../achievement/achievement.service.js';
 import { createNotification } from '../notification/notification.service.js';
+import { recalculateGoalProgress } from '../goal/goal.service.js';
 
 export interface FocusStats {
   totalFocusSeconds: number;
@@ -196,12 +197,15 @@ export const completeFocusSession = async (userId: string, sessionId: string) =>
   if (session.taskId) {
     const addedMinutes = Math.round(finalDurationSec / 60);
     if (addedMinutes > 0) {
-      await prisma.studyTask.update({
+      const updatedTask = await prisma.studyTask.update({
         where: { id: session.taskId },
         data: {
           actualDuration: { increment: addedMinutes },
         },
       });
+      if (updatedTask.goalId) {
+        await recalculateGoalProgress(updatedTask.goalId);
+      }
     }
   }
 

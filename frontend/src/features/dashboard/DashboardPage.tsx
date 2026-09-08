@@ -9,6 +9,7 @@ import { StreakSummary } from './components/StreakSummary.js';
 import { TodayPlanCard } from './components/TodayPlanCard.js';
 import { DailyProgress } from './components/DailyProgress.js';
 import { FocusTimerWidget } from '../focus/components/FocusTimerWidget.js';
+import { ActiveGoalsWidget } from '../goals/components/ActiveGoalsWidget.js';
 
 import './Dashboard.css';
 import '../../components/UIPrimitives.css';
@@ -164,6 +165,9 @@ export const DashboardPage: React.FC = () => {
 
         {/* Visual progress bar cards */}
         <DailyProgress plan={plan} dailyStudyGoalMinutes={dailyGoal} />
+
+        {/* Active Study Goals Widget */}
+        <ActiveGoalsWidget />
 
 
         {/* Recent Milestone card */}
